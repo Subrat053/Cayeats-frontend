@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://api.cayeats.online/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
 
 api.interceptors.request.use((config) => {
@@ -10,7 +10,7 @@ api.interceptors.request.use((config) => {
   if (!token) {
     const storedUser = localStorage.getItem("user");
     if (storedUser && storedUser !== "undefined") {
-      try { 
+      try {
         const parsed = JSON.parse(storedUser);
         token = parsed?.token || token;
       } catch (e) {

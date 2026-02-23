@@ -74,3 +74,14 @@ export const getDeliveryProviders = async () => {
   const res = await api.get("/admin/delivery-providers");
   return res.data?.data;
 };
+
+//updation of admin on pricings
+export const getAdminSettings = async () => {
+  const res = await api.get("/admin/settings");
+  return res.data?.data;
+};
+
+export const updateAdminSettings = async (data) => {
+  const res = await api.put("/admin/settings", data);
+  return res.data?.data;
+};

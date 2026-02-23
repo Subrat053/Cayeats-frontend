@@ -32,7 +32,7 @@ const HomePage = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       {settings.showHeroSection && (
-        <section className="relative bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 overflow-hidden">
+        <section className="relative bg-linear-to-br from-orange-500 via-orange-600 to-orange-700 overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-white rounded-full" />
             <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-white rounded-full" />
@@ -119,27 +119,58 @@ const HomePage = () => {
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {cuisineCategories.slice(0, 6).map((cuisine) => (
-            <Link
-              key={cuisine.name}
-              to={`/cuisines/${encodeURIComponent(cuisine.name)}`}
-              className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all text-center"
-            >
-              <span className="text-2xl">🍽️</span>
-              <span className="text-sm font-medium text-gray-900">
-                {cuisine.name}
-              </span>
-              <span className="text-xs text-gray-400">
-                {cuisine.count} places
-              </span>
-            </Link>
-          ))}
+          {cuisineCategories.slice(0, 6).map((cuisine) => {
+            const ICONS = {
+              caribbean: "🌴",
+              american: "🍔",
+              italian: "🍕",
+              asian: "🍜",
+              mexican: "🌮",
+              seafood: "🦞",
+              indian: "🍛",
+              sushi: "🍣",
+              breakfast: "🥞",
+              desserts: "🍰",
+              healthy: "🥗",
+              "fast food": "🍟",
+              chinese: "🥡",
+              mediterranean: "🫒",
+              thai: "🍲",
+              french: "🥐",
+              pizza: "🍕",
+              burgers: "🍔",
+              vegan: "🌱",
+              bbq: "🍖",
+            };
+            const icon = ICONS[(cuisine.name || "").toLowerCase()] || "🍽️";
+            const displayName = (cuisine.name || "")
+              .split(" ")
+              .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+              .join(" ");
+            return (
+              <Link
+                key={cuisine.name}
+                to={`/cuisines/${encodeURIComponent(cuisine.name)}`}
+                className="group flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-200 hover:border-orange-400 hover:shadow-lg transition-all text-center"
+              >
+                <span className="text-4xl group-hover:scale-110 transition-transform duration-200">
+                  {icon}
+                </span>
+                <span className="text-sm font-semibold text-gray-900 group-hover:text-orange-500 transition-colors">
+                  {displayName}
+                </span>
+                <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
+                  {cuisine.count} {cuisine.count === 1 ? "place" : "places"}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
       {/* Featured Listings - real data */}
       {settings.showFeaturedListings && featuredRestaurants.length > 0 && (
-        <section className="bg-gradient-to-b from-orange-50 to-white py-12">
+        <section className="bg-linear-to-b from-orange-50 to-white py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
               <div>
@@ -281,7 +312,7 @@ const BannerAd = ({ banner }) => {
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/60 to-transparent" />
         <div className="absolute inset-0 flex items-center p-4 md:p-8">
           <div>
             <h3 className="text-white text-lg md:text-2xl font-bold mb-1">

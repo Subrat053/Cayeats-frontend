@@ -31,7 +31,7 @@ export const updateRestaurantProfile = async (data) => {
 // ─── Stats ────────────────────────────────────────────────
 export const getRestaurantStats = async () => {
   const res = await api.get("/restaurant/stats");
-  return res.data?.data;
+  return res.data?.data || res.data;
 };
 
 // ─── Hours ────────────────────────────────────────────────
@@ -153,5 +153,26 @@ export const deleteProduct = async (id) => {
 
 export const getDeliveryClicks = async () => {
   const res = await api.get("/restaurant/delivery-clicks");
+  return res.data?.data || res.data;
+};
+
+export const getSubscriptionPricing = async () => {
+  const res = await api.get("/restaurant/subscription/pricing");
+  return res.data?.data;
+};
+
+export const createCheckoutSession = async (plan) => {
+  const res = await api.post("/restaurant/subscription/checkout", { plan });
+  return res.data;
+};
+
+export const getOrders = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  const res = await api.get(`/restaurant/orders?${query}`);
+  return res.data?.data;
+};
+
+export const updateOrderStatus = async (id, status) => {
+  const res = await api.put(`/restaurant/orders/${id}/status`, { status });
   return res.data?.data;
 };

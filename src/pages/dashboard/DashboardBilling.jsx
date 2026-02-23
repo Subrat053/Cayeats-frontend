@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CreditCard,
-  Download,
   Calendar,
   CheckCircle,
   Clock,
   XCircle,
   RotateCcw,
   RefreshCw,
+  ExternalLink,
 } from "lucide-react";
-import {
-  getBillingHistory,
-  toggleAutoRenew,
-} from "../../api/restaurantService";
+import { getBillingHistory } from "../../api/restaurantService";
 
 const STATUS_CONFIG = {
   completed: { color: "text-green-600 bg-green-50", icon: CheckCircle },
@@ -25,6 +23,7 @@ const DashboardBilling = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("transactions");
+  const navigate = useNavigate();
 
   useEffect(() => {
     getBillingHistory()
@@ -53,30 +52,40 @@ const DashboardBilling = () => {
     transactions = [],
     totalSpent = 0,
     pendingAmount = 0,
-  } = billing || {};
+  } = billing?.data || billing || {};
 
-  // Active services = completed transactions with autoRenew
   const activeServices = transactions.filter(
     (t) => t.status === "completed" && t.autoRenew && t.renewDate,
   );
 
   return (
     <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Billing & Purchases
-        </h1>
-        <p className="text-gray-600 mt-1">
-          Manage your subscriptions and view transaction history
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Billing & Payments
+          </h1>
+          <p className="text-gray-500 mt-1">
+            View your transaction history and manage subscriptions
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/dashboard/subscription")}
+          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm font-medium"
+        >
+          <CreditCard className="w-4 h-4" />
+          Upgrade Plan
+        </button>
       </div>
 
-      {/* Summary Cards - real data */}
+      {/* Summary Cards */}
       <div className="grid md:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl border border-gray-200 p-6 flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-500">Total Spent</p>
-            <p className="text-2xl font-bold text-gray-900">${totalSpent}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              ${totalSpent.toFixed(2)}
+            </p>
             <p className="text-xs text-gray-500 mt-1">All time</p>
           </div>
           <div className="p-3 bg-green-100 rounded-lg">
@@ -86,7 +95,9 @@ const DashboardBilling = () => {
         <div className="bg-white rounded-xl border border-gray-200 p-6 flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-500">Pending</p>
-            <p className="text-2xl font-bold text-gray-900">${pendingAmount}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              ${pendingAmount.toFixed(2)}
+            </p>
             <p className="text-xs text-gray-500 mt-1">Processing</p>
           </div>
           <div className="p-3 bg-yellow-100 rounded-lg">
@@ -110,25 +121,26 @@ const DashboardBilling = () => {
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-8">
-          {["transactions", "subscriptions"].map((tab) => (
+          {[
+            { key: "transactions", label: "Transaction History" },
+            { key: "subscriptions", label: "Active Services" },
+          ].map(({ key, label }) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm capitalize ${
-                activeTab === tab
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === key
                   ? "border-orange-500 text-orange-500"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
-              {tab === "transactions"
-                ? "Transaction History"
-                : "Active Services"}
+              {label}
             </button>
           ))}
         </nav>
       </div>
 
-      {/* Transactions Tab */}
+      {/* Transactions */}
       {activeTab === "transactions" && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -138,9 +150,15 @@ const DashboardBilling = () => {
             <div className="text-center py-12 text-gray-400">
               <CreditCard className="w-10 h-10 mx-auto mb-3 opacity-40" />
               <p>No transactions yet</p>
+              <button
+                onClick={() => navigate("/dashboard/subscription")}
+                className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600"
+              >
+                View Plans
+              </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {transactions.map((txn) => {
                 const config =
                   STATUS_CONFIG[txn.status] || STATUS_CONFIG.pending;
@@ -148,50 +166,45 @@ const DashboardBilling = () => {
                 return (
                   <div
                     key={txn._id}
-                    className="border border-gray-200 rounded-lg p-4"
+                    className="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
-                        <div className="p-2 bg-gray-50 rounded-lg">
+                        <div className="p-2 bg-gray-100 rounded-lg shrink-0">
                           <CreditCard className="w-5 h-5 text-gray-600" />
                         </div>
                         <div>
                           <h3 className="font-medium text-gray-900 capitalize">
-                            {txn.type.replace(/_/g, " ")}
+                            {txn.type?.replace(/_/g, " ")}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-500">
                             {txn.description}
                           </p>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                          <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
                             <span>
                               {new Date(txn.createdAt).toLocaleDateString()}
                             </span>
-                            <span>{txn.paymentMethod}</span>
+                            {txn.paymentMethod && (
+                              <span className="capitalize">
+                                {txn.paymentMethod}
+                              </span>
+                            )}
+                            {txn.stripeSessionId && (
+                              <span className="text-blue-500">via Stripe</span>
+                            )}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="font-semibold text-gray-900">
-                            ${txn.amount}
-                          </p>
-                          <span
-                            className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full mt-1 ${config.color}`}
-                          >
-                            <StatusIcon className="w-3 h-3" />
-                            {txn.status}
-                          </span>
-                          {txn.status === "failed" && txn.failureReason && (
-                            <p className="text-xs text-red-600 mt-1">
-                              {txn.failureReason}
-                            </p>
-                          )}
-                        </div>
-                        {txn.status === "failed" && (
-                          <button className="flex items-center gap-1 text-xs border border-orange-500 text-orange-500 px-2 py-1 rounded hover:bg-orange-50">
-                            <RotateCcw className="w-3 h-3" /> Retry
-                          </button>
-                        )}
+                      <div className="text-right shrink-0">
+                        <p className="font-bold text-gray-900">
+                          ${txn.amount?.toFixed(2)}
+                        </p>
+                        <span
+                          className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full mt-1 ${config.color}`}
+                        >
+                          <StatusIcon className="w-3 h-3" />
+                          {txn.status}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -202,7 +215,7 @@ const DashboardBilling = () => {
         </div>
       )}
 
-      {/* Active Services Tab */}
+      {/* Active Services */}
       {activeTab === "subscriptions" && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -225,7 +238,7 @@ const DashboardBilling = () => {
                 return (
                   <div
                     key={service._id}
-                    className="border border-gray-200 rounded-lg p-4"
+                    className="border border-gray-200 rounded-xl p-5"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -234,16 +247,16 @@ const DashboardBilling = () => {
                         </div>
                         <div>
                           <h3 className="font-medium text-gray-900 capitalize">
-                            {service.type.replace(/_/g, " ")}
+                            {service.type?.replace(/_/g, " ")}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-500">
                             {service.description}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-gray-900">
-                          ${service.amount}
+                        <p className="font-bold text-gray-900">
+                          ${service.amount?.toFixed(2)}
                         </p>
                         <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
                           Active
@@ -251,7 +264,7 @@ const DashboardBilling = () => {
                       </div>
                     </div>
                     {daysLeft !== null && (
-                      <div className="mt-3 flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="mt-3 p-3 bg-gray-50 rounded-lg flex items-center justify-between">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Calendar className="w-4 h-4" />
                           <span>{daysLeft} days until renewal</span>
@@ -270,19 +283,17 @@ const DashboardBilling = () => {
         </div>
       )}
 
-      {/* PayPal Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-        <div className="flex gap-3">
-          <CreditCard className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-          <div>
-            <h3 className="font-medium text-blue-900">
-              Secure Payment Processing
-            </h3>
-            <p className="text-sm text-blue-700 mt-1">
-              All payments are processed securely through PayPal. Your payment
-              information is never stored on our servers.
-            </p>
-          </div>
+      {/* Stripe info */}
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 flex items-start gap-3">
+        <CreditCard className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
+        <div>
+          <h3 className="font-medium text-gray-900">
+            Secure Payment via Stripe
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            All payments are processed securely through Stripe. Your payment
+            information is never stored on our servers.
+          </p>
         </div>
       </div>
     </div>
