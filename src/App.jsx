@@ -11,6 +11,7 @@ import { AdminLayout } from "./pages/admin";
 import { DashboardLayout } from "./pages/dashboard";
 
 import Products from "./pages/dashboard/Products";
+import DashboardSubscription from "./pages/dashboard/DashboardSubscription";
 
 import {
   HomePage,
@@ -37,7 +38,6 @@ import {
   DataImport,
   AdminMarketing,
   AdminSiteSettings,
-  AdminClassifieds,
   AdminCRM,
   AdminBlog,
 } from "./pages/admin";
@@ -48,7 +48,6 @@ import {
   DashboardAnalytics,
   DashboardAdvertising,
   DashboardMenu,
-  DashboardClaimSubscription,
   DashboardFeaturedListings,
   DashboardTonightsCravings,
   DashboardBannerAds,
@@ -67,11 +66,11 @@ function App() {
             <Router>
               <ScrollToTop />
               <Routes>
-                {/* Auth Routes */}
+                {/* ── Auth Routes ── */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
-                {/* Public Routes */}
+                {/* ── Public Routes ── */}
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/restaurants" element={<RestaurantsPage />} />
@@ -89,7 +88,7 @@ function App() {
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
 
-                {/* ✅ Admin Routes - protected, admin only */}
+                {/* ── Admin Routes ── */}
                 <Route
                   path="/admin"
                   element={
@@ -111,13 +110,12 @@ function App() {
                   <Route path="import" element={<DataImport />} />
                   <Route path="marketing" element={<AdminMarketing />} />
                   <Route path="site-settings" element={<AdminSiteSettings />} />
-                  <Route path="classifieds" element={<AdminClassifieds />} />
                   <Route path="crm" element={<AdminCRM />} />
                   <Route path="blog" element={<AdminBlog />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
 
-                {/* ✅ Dashboard Routes - protected, restaurant only */}
+                {/* ── Dashboard Routes (restaurant only) ── */}
                 <Route
                   path="/dashboard"
                   element={
@@ -129,8 +127,8 @@ function App() {
                   <Route index element={<DashboardOverview />} />
                   <Route path="profile" element={<DashboardProfile />} />
                   <Route path="menu" element={<DashboardMenu />} />
-                  <Route path="analytics" element={<DashboardAnalytics />} />
                   <Route path="products" element={<Products />} />
+                  <Route path="analytics" element={<DashboardAnalytics />} />
                   <Route
                     path="advertising"
                     element={<DashboardAdvertising />}
@@ -149,10 +147,12 @@ function App() {
                     element={<DashboardPreferredDelivery />}
                   />
                   <Route path="orders" element={<DashboardOrders />} />
+                  {/* ✅ New Stripe subscription page */}
                   <Route
                     path="subscription"
-                    element={<DashboardClaimSubscription />}
+                    element={<DashboardSubscription />}
                   />
+                  {/* ✅ Billing / transaction history */}
                   <Route path="billing" element={<DashboardBilling />} />
                 </Route>
               </Routes>

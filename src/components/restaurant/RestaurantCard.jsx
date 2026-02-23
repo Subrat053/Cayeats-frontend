@@ -29,6 +29,7 @@ const RestaurantCard = ({
     _id,
     fullName, // ✅ was "name"
     image,
+    profileImage,
     cuisineTypes, // ✅ was "cuisines"
     rating,
     reviewCount,
@@ -59,7 +60,11 @@ const RestaurantCard = ({
       >
         <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
           <img
-            src={image || "/placeholder.jpg"}
+            src={
+              profileImage ||
+              image ||
+              "https://placehold.co/400x250/f97316/ffffff?text=No+Image"
+            }
             alt={fullName}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -101,7 +106,11 @@ const RestaurantCard = ({
       <Link to={href} className="block relative">
         <div className="aspect-[16/10] overflow-hidden">
           <img
-            src={image || "/placeholder.jpg"}
+            src={
+              profileImage ||
+              image ||
+              "https://placehold.co/400x250/f97316/ffffff?text=No+Image"
+            }
             alt={fullName}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />

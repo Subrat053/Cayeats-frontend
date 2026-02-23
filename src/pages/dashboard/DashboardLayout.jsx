@@ -38,6 +38,7 @@ const NAV_ITEMS = [
 
 const DashboardLayout = () => {
   const [marketingOpen, setMarketingOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -48,12 +49,20 @@ const DashboardLayout = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col fixed top-0 left-0 h-full z-10">
+      <aside
+        className={`fixed top-0 left-0 h-full z-20 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0 lg:w-56`}
+      >
         {/* Logo */}
         <div className="p-4 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">C</span>
+              <img
+                src="/cayeats-logo.jpeg"
+                alt="cayEats"
+                className="object-contain"
+              />
             </div>
             <span className="font-bold text-gray-900">
               <span className="text-orange-500">Cay</span>Eats
@@ -94,6 +103,7 @@ const DashboardLayout = () => {
                                 : "text-gray-500 hover:text-orange-500 hover:bg-orange-50"
                             }`
                           }
+                          onClick={() => setSidebarOpen(false)} // close sidebar on mobile after navigation
                         >
                           {child.label}
                         </NavLink>
@@ -116,6 +126,7 @@ const DashboardLayout = () => {
                       : "text-gray-600 hover:bg-orange-50 hover:text-orange-500"
                   }`
                 }
+                onClick={() => setSidebarOpen(false)} // close sidebar on mobile after navigation
               >
                 <item.icon className="w-4 h-4" />
                 {item.label}
@@ -136,10 +147,38 @@ const DashboardLayout = () => {
         </div>
       </aside>
 
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-10 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <div className="flex-1 ml-56 flex flex-col">
+      <div className="flex-1 lg:ml-56 flex flex-col">
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-6 py-3 flex justify-end items-center sticky top-0 z-10">
+        <header className="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center sticky top-0 z-10">
+          {/* Hamburger button (mobile only) */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 text-gray-500 hover:text-orange-500 lg:hidden"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
           <button className="relative p-2 text-gray-500 hover:text-orange-500">
             <Bell className="w-5 h-5" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>

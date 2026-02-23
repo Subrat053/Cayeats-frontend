@@ -91,7 +91,7 @@ const RegisterPage = () => {
           alt="Restaurant interior"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 to-orange-800/90" />
+        <div className="absolute inset-0 bg-linear-to-br from-orange-600/90 to-orange-800/90" />
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="text-center text-white">
             <h2 className="text-4xl font-bold mb-4">Join CayEats Today</h2>
@@ -122,7 +122,13 @@ const RegisterPage = () => {
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8">
             <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-lg">C</span>
+              <span className="text-white font-bold text-lg">
+                <img
+                  src="\public\cayeats-logo.jpeg"
+                  alt="cayEats"
+                  className="object-fill h-10"
+                />
+              </span>
             </div>
             <span className="text-2xl font-bold">
               <span className="text-gray-900">Cay</span>
@@ -169,7 +175,7 @@ const RegisterPage = () => {
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}

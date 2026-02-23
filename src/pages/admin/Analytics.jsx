@@ -11,8 +11,8 @@ const Analytics = () => {
   useEffect(() => {
     Promise.all([getAdminAnalytics(), getAdminDashboard()])
       .then(([a, s]) => {
-        setAnalytics(a);
-        setStats(s);
+        setAnalytics(a?.data || a);
+        setStats(s?.data || s);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));

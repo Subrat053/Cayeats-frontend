@@ -52,7 +52,6 @@ const AdminLayout = () => {
       icon: Truck,
     },
     { name: "Banners & Ads", href: "/admin/banners", icon: Image },
-    { name: "Classifieds", href: "/admin/classifieds", icon: Newspaper },
     { name: "Pricing", href: "/admin/pricing", icon: DollarSign },
     { name: "Marketing", href: "/admin/marketing", icon: Megaphone },
     { name: "CRM", href: "/admin/crm", icon: UserCheck },

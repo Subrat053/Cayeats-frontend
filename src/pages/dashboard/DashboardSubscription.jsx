@@ -1,169 +1,101 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  Shield,
   CheckCircle,
-  Clock,
-  CreditCard,
-  AlertTriangle,
-  BarChart2,
-  Megaphone,
-  TrendingUp,
   Star,
   Zap,
   Crown,
+  Loader,
+  AlertCircle,
   RefreshCw,
+  Calendar,
+  Shield,
 } from "lucide-react";
 import {
+  getSubscriptionPricing,
+  createCheckoutSession,
   getSubscriptionDetails,
   toggleAutoRenew,
 } from "../../api/restaurantService";
 
-const PLANS = [
-  {
-    id: "silver",
-    name: "Silver",
-    duration: "6 Months",
-    price: 160,
-    icon: Shield,
-    color: "from-gray-400 to-gray-500",
-    border: "border-gray-300",
+const PLAN_ICONS = { Silver: Star, Gold: Zap, Platinum: Crown };
+const PLAN_COLORS = {
+  Silver: {
     bg: "bg-gray-50",
-    badge: "bg-gray-200 text-gray-700",
-    features: [
-      "Verified badge on profile",
-      "Basic analytics",
-      "Profile management",
-      "Standard support",
-    ],
+    border: "border-gray-300",
+    badge: "bg-gray-100 text-gray-700",
+    btn: "bg-gray-700 hover:bg-gray-800",
   },
-  {
-    id: "gold",
-    name: "Gold",
-    duration: "1 Year",
-    price: 240,
-    icon: Star,
-    color: "from-yellow-400 to-orange-500",
-    border: "border-yellow-400",
-    bg: "bg-yellow-50",
-    badge: "bg-yellow-200 text-yellow-800",
-    popular: true,
-    features: [
-      "Everything in Silver",
-      "Advanced analytics",
-      "Featured listing access",
-      "Priority support",
-      "Tonight's Cravings access",
-    ],
+  Gold: {
+    bg: "bg-orange-50",
+    border: "border-orange-400",
+    badge: "bg-orange-500 text-white",
+    btn: "bg-orange-500 hover:bg-orange-600",
   },
-  {
-    id: "platinum",
-    name: "Platinum",
-    duration: "2 Years",
-    price: 400,
-    icon: Crown,
-    color: "from-purple-500 to-indigo-600",
-    border: "border-purple-400",
+  Platinum: {
     bg: "bg-purple-50",
-    badge: "bg-purple-200 text-purple-800",
-    features: [
-      "Everything in Gold",
-      "Banner ads access",
-      "Preferred delivery partner",
-      "Dedicated account manager",
-      "Early access to new features",
-    ],
+    border: "border-purple-400",
+    badge: "bg-purple-600 text-white",
+    btn: "bg-purple-600 hover:bg-purple-700",
   },
-];
-
-const BENEFITS = [
-  {
-    icon: Shield,
-    title: "Verified Badge",
-    desc: "Meta-style verified checkmark on your profile",
-  },
-  {
-    icon: BarChart2,
-    title: "Advanced Analytics",
-    desc: "Detailed insights into views, clicks, and behavior",
-  },
-  {
-    icon: TrendingUp,
-    title: "Profile Management",
-    desc: "Full control over your restaurant information",
-  },
-  {
-    icon: Megaphone,
-    title: "Purchase Advertising",
-    desc: "Access featured listings, banners, and promotions",
-  },
-];
-
-// ✅ Meta-style verified badge component
-const VerifiedBadge = ({ plan }) => {
-  const colors = {
-    silver: "bg-gray-500",
-    gold: "bg-yellow-500",
-    platinum: "bg-purple-600",
-  };
-  return (
-    <span
-      title={`${plan} Verified`}
-      className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${colors[plan] || "bg-orange-500"}`}
-    >
-      <svg
-        className="w-3 h-3 text-white"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path
-          fillRule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          clipRule="evenodd"
-        />
-      </svg>
-    </span>
-  );
 };
 
-const DashboardClaimSubscription = () => {
-  const [sub, setSub] = useState(null);
+const DashboardSubscription = () => {
+  const [plans, setPlans] = useState([]);
+  const [current, setCurrent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [toggling, setToggling] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [selectedPlan, setSelected] = useState("gold");
-  const [showPlans, setShowPlans] = useState(false);
+  const [isFirstYear, setIsFirstYear] = useState(false);
+  const [discount, setDiscount] = useState(0);
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    getSubscriptionDetails()
-      .then((data) => {
-        setSub(data);
-        // ✅ default selected to next tier up from current
-        if (data?.plan === "Silver") setSelected("gold");
-        if (data?.plan === "Gold") setSelected("platinum");
+    // Handle Stripe redirect
+    if (searchParams.get("success") === "true") {
+      setSuccess(
+        `🎉 Payment successful! Your ${searchParams.get("plan")} plan is now active.`,
+      );
+    }
+    if (searchParams.get("cancelled") === "true") {
+      setError("Payment cancelled. No charge was made.");
+    }
+
+    Promise.all([getSubscriptionPricing(), getSubscriptionDetails()])
+      .then(([pricingData, subData]) => {
+        setPlans(pricingData?.plans || []);
+        setIsFirstYear(pricingData?.isFirstYear || false);
+        setDiscount(pricingData?.discount || 0);
+        setCurrent(subData);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
-  const handleToggleAutoRenew = async () => {
-    setToggling(true);
+  const handleCheckout = async (planId) => {
+    setCheckingOut(planId);
     setError(null);
     try {
-      await toggleAutoRenew(!sub.autoRenew);
-      setSub((prev) => ({ ...prev, autoRenew: !prev.autoRenew }));
-      setSuccess(`Auto-renew ${!sub.autoRenew ? "enabled" : "disabled"}.`);
-      setTimeout(() => setSuccess(null), 3000);
+      const res = await createCheckoutSession(planId);
+      if (res?.url) {
+        window.location.href = res.url; // redirect to Stripe
+      }
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setToggling(false);
+      setError("Checkout failed: " + err.message);
+      setCheckingOut(null);
     }
   };
 
-  const handlePurchase = (planId) => {
-    // PayPal integration goes here
-    alert(`PayPal checkout for ${planId} plan — coming soon`);
+  const handleToggleAutoRenew = async () => {
+    try {
+      await toggleAutoRenew(!current?.autoRenew);
+      setCurrent((prev) => ({ ...prev, autoRenew: !prev?.autoRenew }));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   if (loading)
@@ -173,328 +105,253 @@ const DashboardClaimSubscription = () => {
       </div>
     );
 
-  const isActive = sub?.status === "active";
-  const isExpired = sub?.status === "expired";
-  const isNearExpiry = isActive && sub?.daysLeft <= 30;
-
-  // match plan object to current subscription
-  const currentPlanKey = sub?.plan?.toLowerCase();
-  const currentPlan = PLANS.find(
-    (p) => p.name.toLowerCase() === currentPlanKey,
-  );
-  const PlanIcon = currentPlan?.icon || Shield;
+  const daysLeft = current?.expiresAt
+    ? Math.ceil(
+        (new Date(current.expiresAt) - new Date()) / (1000 * 60 * 60 * 24),
+      )
+    : null;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="p-6 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Restaurant Subscription
-        </h1>
-        <p className="text-gray-600 mt-1">
-          Manage your verified status and plan
+        <h1 className="text-2xl font-bold text-gray-900">Subscription Plans</h1>
+        <p className="text-gray-500 mt-1">
+          Choose the plan that works best for your restaurant
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">
-          ❌ {error}
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600 flex gap-2">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          {error}
         </div>
       )}
       {success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-green-700 text-sm">
-          ✅ {success}
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-700 flex gap-2">
+          <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          {success}
         </div>
       )}
 
-      {/* ✅ ACTIVE subscription card */}
-      {isActive && sub && (
-        <div
-          className={`rounded-xl border-2 p-6 ${isNearExpiry ? "border-yellow-400 bg-yellow-50" : `${currentPlan?.border || "border-green-300"} ${currentPlan?.bg || "bg-green-50"}`}`}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex items-start gap-4">
-              {/* Plan icon */}
-              <div
-                className={`p-3 rounded-xl bg-gradient-to-br ${currentPlan?.color || "from-green-400 to-green-600"}`}
-              >
-                <PlanIcon className="w-7 h-7 text-white" />
+      {/* Current subscription status */}
+      {current?.plan && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Current Subscription
+          </h2>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-orange-100 rounded-xl">
+                {(() => {
+                  const Icon = PLAN_ICONS[current.plan] || Star;
+                  return <Icon className="w-6 h-6 text-orange-600" />;
+                })()}
               </div>
-
               <div>
-                {/* Name + verified badge */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {sub.plan || "Verified"} Plan
-                  </h2>
-                  <VerifiedBadge plan={currentPlanKey || "gold"} />
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900">
+                    {current.plan} Plan
+                  </h3>
                   <span
-                    className={`text-xs font-medium px-2 py-0.5 rounded-full ${currentPlan?.badge || "bg-green-200 text-green-800"}`}
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      current.status === "active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
                   >
-                    {isNearExpiry ? "⚠️ Expiring Soon" : "✓ Active"}
+                    {current.status}
                   </span>
                 </div>
-
-                {/* Subscription details */}
-                <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-1 text-sm">
-                  <div>
-                    <span className="text-gray-500">Purchase Date</span>
-                    <p className="font-medium text-gray-900">
-                      {sub.startDate
-                        ? new Date(sub.startDate).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })
-                        : "N/A"}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Expiry Date</span>
-                    <p className="font-medium text-gray-900">
-                      {new Date(sub.expiresAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Days Remaining</span>
-                    <p
-                      className={`font-bold ${isNearExpiry ? "text-yellow-600" : "text-green-600"}`}
-                    >
-                      {sub.daysLeft} days
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Auto-Renew</span>
-                    <p className="font-medium text-gray-900">
-                      {sub.autoRenew ? "✅ Enabled" : "❌ Disabled"}
-                    </p>
-                  </div>
-                </div>
+                {daysLeft !== null && (
+                  <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {daysLeft > 0 ? `${daysLeft} days remaining` : "Expired"}
+                    {current.expiresAt &&
+                      ` · Expires ${new Date(current.expiresAt).toLocaleDateString()}`}
+                  </p>
+                )}
               </div>
             </div>
-
-            {/* Action buttons */}
-            <div className="flex flex-col gap-2 sm:items-end shrink-0">
-              <button
-                onClick={() => setShowPlans((p) => !p)}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600"
-              >
-                {currentPlanKey === "platinum" ? "Renew Plan" : "Upgrade Plan"}
-              </button>
-              <button
-                onClick={handleToggleAutoRenew}
-                disabled={toggling}
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50"
-              >
-                <RefreshCw className="w-3 h-3" />
-                {toggling
-                  ? "Updating..."
-                  : sub.autoRenew
-                    ? "Disable Auto-Renew"
-                    : "Enable Auto-Renew"}
-              </button>
-            </div>
+            <button
+              onClick={handleToggleAutoRenew}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                current.autoRenew
+                  ? "border-green-300 text-green-700 bg-green-50 hover:bg-green-100"
+                  : "border-gray-300 text-gray-600 bg-white hover:bg-gray-50"
+              }`}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Auto-Renew: {current.autoRenew ? "On" : "Off"}
+            </button>
           </div>
 
-          {/* Near expiry warning */}
-          {isNearExpiry && (
-            <div className="mt-4 flex items-center gap-2 bg-yellow-100 border border-yellow-300 rounded-lg p-3">
-              <AlertTriangle className="w-4 h-4 text-yellow-600 shrink-0" />
-              <p className="text-sm text-yellow-700">
-                Your subscription expires in{" "}
-                <strong>{sub.daysLeft} days</strong>. Renew now to keep your
-                verified status.
+          {/* Progress bar */}
+          {daysLeft !== null && current.status === "active" && (
+            <div className="mt-4">
+              <div className="w-full bg-gray-100 rounded-full h-2">
+                <div
+                  className="bg-orange-500 h-2 rounded-full transition-all"
+                  style={{
+                    width: `${Math.min(100, Math.max(0, (daysLeft / 365) * 100))}%`,
+                  }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {daysLeft} days remaining
               </p>
             </div>
           )}
         </div>
       )}
 
-      {/* ✅ EXPIRED card */}
-      {isExpired && (
-        <div className="bg-red-50 border-2 border-red-300 rounded-xl p-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-red-500 rounded-xl">
-              <Clock className="w-7 h-7 text-white" />
-            </div>
+      {/* First year discount banner */}
+      {isFirstYear && discount > 0 && (
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-5 text-white">
+          <div className="flex items-center gap-3">
+            <div className="text-3xl">🎉</div>
             <div>
-              <h2 className="text-lg font-bold text-red-900">
-                Subscription Expired
-              </h2>
-              <p className="text-red-700 text-sm mt-1">
-                Expired on {new Date(sub.expiresAt).toLocaleDateString()}. Renew
-                to restore verified status.
+              <h3 className="font-bold text-lg">
+                First Year Discount — {discount}% OFF!
+              </h3>
+              <p className="text-green-100 text-sm">
+                This special pricing applies to your first subscription. Prices
+                shown below include your discount.
               </p>
             </div>
           </div>
-          <button
-            onClick={() => setShowPlans(true)}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 shrink-0"
-          >
-            Reactivate Now
-          </button>
         </div>
       )}
 
-      {/* ✅ NO subscription */}
-      {sub?.status === "none" && (
-        <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-500 rounded-xl">
-              <Shield className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-blue-900">
-                Claim Your Restaurant
-              </h2>
-              <p className="text-blue-700 text-sm mt-1">
-                Get verified and unlock all features. Starting from $160.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowPlans(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 shrink-0"
-          >
-            View Plans
-          </button>
-        </div>
-      )}
+      {/* Plans grid */}
+      <div className="grid md:grid-cols-3 gap-6">
+        {plans.map((plan) => {
+          const colors = PLAN_COLORS[plan.id] || PLAN_COLORS.Silver;
+          const Icon = PLAN_ICONS[plan.id] || Star;
+          const isCurrent =
+            current?.plan === plan.id && current?.status === "active";
 
-      {/* ✅ 3 PLAN cards — shown on demand */}
-      {(showPlans || !isActive) && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">
-            {isActive
-              ? currentPlanKey === "platinum"
-                ? "Renew Your Plan"
-                : "Upgrade Your Plan"
-              : "Choose a Plan"}
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            {PLANS.map((plan) => {
-              const Icon = plan.icon;
-              const isCurrent = plan.name.toLowerCase() === currentPlanKey;
-              return (
-                <div
-                  key={plan.id}
-                  onClick={() => !isCurrent && setSelected(plan.id)}
-                  className={`relative rounded-xl border-2 p-5 transition-all ${
-                    isCurrent
-                      ? `${plan.border} ${plan.bg} opacity-60 cursor-not-allowed`
-                      : selectedPlan === plan.id
-                        ? `${plan.border} ${plan.bg} cursor-pointer`
-                        : "border-gray-200 hover:border-gray-300 cursor-pointer"
-                  }`}
-                >
-                  {plan.popular && !isCurrent && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-orange-500 text-white text-xs px-3 py-0.5 rounded-full font-medium">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  {isCurrent && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-gray-500 text-white text-xs px-3 py-0.5 rounded-full font-medium">
-                        Current Plan
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className={`p-2 rounded-lg bg-gradient-to-br ${plan.color}`}
-                    >
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-900">{plan.name}</h3>
-                      <p className="text-xs text-gray-500">{plan.duration}</p>
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <span className="text-3xl font-bold text-gray-900">
-                      ${plan.price}
-                    </span>
-                    <span className="text-gray-500 text-sm"> USD</span>
-                  </div>
-
-                  <ul className="space-y-2 mb-5">
-                    {plan.features.map((f) => (
-                      <li
-                        key={f}
-                        className="flex items-start gap-2 text-sm text-gray-600"
-                      >
-                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={() => !isCurrent && handlePurchase(plan.id)}
-                    disabled={isCurrent}
-                    className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isCurrent
-                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                        : selectedPlan === plan.id
-                          ? "bg-orange-500 text-white hover:bg-orange-600"
-                          : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
+          return (
+            <div
+              key={plan.id}
+              className={`rounded-xl border-2 p-6 flex flex-col relative transition-all ${colors.bg} ${
+                plan.popular ? colors.border + " shadow-lg" : "border-gray-200"
+              }`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${colors.badge}`}
                   >
-                    {isCurrent ? "Current Plan" : `Get ${plan.name}`}
-                  </button>
+                    Most Popular
+                  </span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+              )}
 
-      {/* Benefits */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Verified Restaurant Benefits
-        </h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {BENEFITS.map((b) => {
-            const Icon = b.icon;
-            return (
-              <div key={b.title} className="flex items-start gap-3">
-                <div className="p-2 bg-orange-50 rounded-lg shrink-0">
-                  <Icon className="w-5 h-5 text-orange-500" />
+              {isCurrent && (
+                <div className="absolute -top-3 right-4">
+                  <span className="px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold">
+                    Current Plan
+                  </span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className={`p-2 rounded-lg ${plan.popular ? "bg-orange-100" : "bg-white"}`}
+                >
+                  <Icon
+                    className={`w-5 h-5 ${plan.popular ? "text-orange-600" : "text-gray-600"}`}
+                  />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900 text-sm">{b.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{b.desc}</p>
+                  <h3 className="font-bold text-gray-900 text-lg">
+                    {plan.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">{plan.duration}</p>
                 </div>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Price */}
+              <div className="mb-6">
+                {plan.isFirstYear && plan.discount > 0 ? (
+                  <>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold text-gray-900">
+                        ${plan.finalPrice}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm line-through text-gray-400">
+                        ${plan.price}
+                      </span>
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                        {plan.discount}% off
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      First year only · renews at ${plan.price}
+                    </p>
+                  </>
+                ) : (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-bold text-gray-900">
+                      ${plan.price}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Features */}
+              <ul className="space-y-2 flex-1 mb-6">
+                {plan.features?.map((f) => (
+                  <li
+                    key={f}
+                    className="flex items-start gap-2 text-sm text-gray-600"
+                  >
+                    <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={() => handleCheckout(plan.id)}
+                disabled={!!checkingOut || isCurrent}
+                className={`w-full py-3 rounded-lg text-white font-semibold transition-colors flex items-center justify-center gap-2 ${
+                  isCurrent
+                    ? "bg-green-500 cursor-default"
+                    : colors.btn + " disabled:opacity-60"
+                }`}
+              >
+                {checkingOut === plan.id ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" /> Redirecting to
+                    Stripe...
+                  </>
+                ) : isCurrent ? (
+                  <>
+                    <CheckCircle className="w-4 h-4" /> Active Plan
+                  </>
+                ) : (
+                  `Subscribe — $${plan.finalPrice}`
+                )}
+              </button>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Payment info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <div className="flex items-center gap-2 mb-1">
-          <CreditCard className="w-4 h-4 text-blue-600" />
-          <p className="text-sm font-medium text-blue-900">
-            Secure Payment via PayPal
-          </p>
-        </div>
-        <p className="text-sm text-blue-700">
-          Instant verification upon payment. Auto-renewal on by default. Email
-          receipts for all transactions.
+      {/* Security note */}
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center gap-3">
+        <Shield className="w-5 h-5 text-gray-500 shrink-0" />
+        <p className="text-sm text-gray-600">
+          Payments are processed securely via <strong>Stripe</strong>. Your card
+          details are never stored on our servers. All transactions are
+          encrypted with TLS/SSL.
         </p>
       </div>
     </div>
   );
 };
 
-export default DashboardClaimSubscription;
+export default DashboardSubscription;
