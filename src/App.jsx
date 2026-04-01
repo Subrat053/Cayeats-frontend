@@ -31,6 +31,7 @@ import {
   PrivacyPage,
   CookiesPage,
   AdvertisePage,
+  AboutPage,
 } from "./pages";
 
 import { LoginPage, RegisterPage } from "./pages/auth";
@@ -93,6 +94,7 @@ function App() {
                     path="/cuisines/:categoryId"
                     element={<CuisineCategoryPage />}
                   />
+                  <Route path="/about" element={<AboutPage />} />
                   <Route path="/partner" element={<PartnerPage />} />
                   <Route path="/cravings" element={<CravingsPage />} />
                   <Route path="/help" element={<HelpPage />} />

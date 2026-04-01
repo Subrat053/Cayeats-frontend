@@ -66,7 +66,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
@@ -83,6 +83,9 @@ const Header = () => {
             </NavLink>
             <NavLink to="/partner" className="nav-link">
               Partner With Us
+            </NavLink>
+            <NavLink to="/about" className="nav-link">
+              About
             </NavLink>
           </nav>
 
