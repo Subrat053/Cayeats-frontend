@@ -12,6 +12,7 @@ import AdminMarketing from "./AdminMarketing";
 import AdminSiteSettings from "./AdminSiteSettings";
 import AdminCRM from "./AdminCRM";
 import AdminBlog from "./AdminBlog";
+import AdminFooterSettings from "./AdminFooterSettings";
 
 export {
   AdminLayout,
@@ -28,4 +29,5 @@ export {
   AdminSiteSettings,
   AdminCRM,
   AdminBlog,
+  AdminFooterSettings,
 };

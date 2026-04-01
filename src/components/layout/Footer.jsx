@@ -1,145 +1,259 @@
-import { Link } from 'react-router-dom';
-import { 
-  Facebook, 
-  Instagram, 
-  Twitter, 
-  Mail, 
-  Phone, 
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Mail,
+  Phone,
   MapPin,
-  ExternalLink
-} from 'lucide-react';
-import logo from '../../assets/cayeats-rmbg.png';
+} from "lucide-react";
+import logo from "../../assets/cayeats-rmbg.png";
+import { getFooterSettings } from "../../api/adminService";
+
+const DEFAULT_FOOTER_LINKS = {
+  discover: [
+    { label: "All Restaurants", href: "/restaurants" },
+    { label: "Cuisines", href: "/cuisines" },
+    { label: "Tonight's Cravings", href: "/cravings" },
+    { label: "Featured Restaurants", href: "/restaurants?featured=true" },
+  ],
+  forBusiness: [
+    { label: "Partner With Us", href: "/partner" },
+    { label: "Restaurant Sign Up", href: "/register?type=restaurant" },
+    { label: "Delivery Partners", href: "/register?type=delivery" },
+    { label: "Advertising", href: "/advertise" },
+  ],
+  support: [
+    { label: "Help Center", href: "/help" },
+    { label: "Contact Us", href: "/contact" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Report an Issue", href: "/report" },
+  ],
+  legal: [
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Cookie Policy", href: "/cookies" },
+  ],
+};
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [footerLinks, setFooterLinks] = useState(DEFAULT_FOOTER_LINKS);
+  const [loading, setLoading] = useState(true);
 
-  const footerLinks = {
-    discover: [
-      { label: 'All Restaurants', href: '/restaurants' },
-      { label: 'Cuisines', href: '/cuisines' },
-      { label: 'Tonight\'s Cravings', href: '/cravings' },
-      { label: 'Featured Restaurants', href: '/restaurants?featured=true' },
-    ],
-    forBusiness: [
-      { label: 'Partner With Us', href: '/partner' },
-      { label: 'Restaurant Sign Up', href: '/register?type=restaurant' },
-      { label: 'Delivery Partners', href: '/register?type=delivery' },
-      { label: 'Advertising', href: '/advertise' },
-    ],
-    support: [
-      { label: 'Help Center', href: '/help' },
-      { label: 'Contact Us', href: '/contact' },
-      { label: 'FAQ', href: '/faq' },
-      { label: 'Report an Issue', href: '/report' },
-    ],
-    legal: [
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Cookie Policy', href: '/cookies' },
-    ],
-  };
+  useEffect(() => {
+    const loadFooterSettings = async () => {
+      try {
+        setLoading(true);
+        const settings = await getFooterSettings();
+        console.log("Footer settings loaded:", settings);
+
+        if (
+          settings &&
+          typeof settings === "object" &&
+          Object.keys(settings).length > 0
+        ) {
+          setFooterLinks({
+            discover:
+              settings.discover && settings.discover.length > 0
+                ? settings.discover
+                : DEFAULT_FOOTER_LINKS.discover,
+            forBusiness:
+              settings.forBusiness && settings.forBusiness.length > 0
+                ? settings.forBusiness
+                : DEFAULT_FOOTER_LINKS.forBusiness,
+            support:
+              settings.support && settings.support.length > 0
+                ? settings.support
+                : DEFAULT_FOOTER_LINKS.support,
+            legal:
+              settings.legal && settings.legal.length > 0
+                ? settings.legal
+                : DEFAULT_FOOTER_LINKS.legal,
+          });
+        } else {
+          setFooterLinks(DEFAULT_FOOTER_LINKS);
+        }
+      } catch (error) {
+        console.error("Failed to load footer settings:", error);
+        setFooterLinks(DEFAULT_FOOTER_LINKS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFooterSettings();
+  }, []);
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-gray-300 w-full">
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand Column */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            <Link to="/" className="flex items-center justify-center lg:justify-start -ml-5 lg:ml-5 gap-2 mb-6">
-              <img src={logo} alt="CayEats Logo" className='h-16 scale-125  ' />
-              {/* <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
-                <span className="text-white text-xl">🍽️</span>
-              </div>
-              <div>
-                <span className="text-xl font-bold text-white">Cay</span>
-                <span className="text-xl font-bold text-primary-400">Eats</span>
-              </div> */}
+          <div className="col-span-1 sm:col-span-1 lg:col-span-1">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity"
+            >
+              <img src={logo} alt="CayEats Logo" className="h-12" />
             </Link>
-            <p className="text-sm text-gray-400 mb-4 px-5 lg:px-0">
-              Island Dining Authority. Discover the best restaurants in the Cayman Islands and order from your favorite delivery providers.
+            <p className="text-sm text-gray-400 leading-relaxed mb-6">
+              Island Dining Authority. Discover the best restaurants in the
+              Cayman Islands.
             </p>
-            <div className="flex justify-center lg:justify-start gap-3">
-              <a href="#" className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
+            <div className="flex gap-3">
+              <a
+                href="#"
+                className="p-2.5 bg-gray-800 rounded-lg hover:bg-orange-500 transition-all duration-300 transform hover:scale-110"
+              >
                 <Facebook className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
+              <a
+                href="#"
+                className="p-2.5 bg-gray-800 rounded-lg hover:bg-orange-500 transition-all duration-300 transform hover:scale-110"
+              >
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
+              <a
+                href="#"
+                className="p-2.5 bg-gray-800 rounded-lg hover:bg-orange-500 transition-all duration-300 transform hover:scale-110"
+              >
                 <Twitter className="w-4 h-4" />
               </a>
             </div>
           </div>
 
           {/* Discover */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Discover</h3>
-            <ul className="space-y-2">
-              {footerLinks.discover.map((link) => (
-                <li key={link.href}>
-                  <Link 
-                    to={link.href} 
-                    className="text-sm hover:text-primary-400 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+          <div className="col-span-1">
+            <h3 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">
+              Discover
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.discover && footerLinks.discover.length > 0
+                ? footerLinks.discover.map((link, idx) => (
+                    <li key={`discover-${idx}`}>
+                      <Link
+                        to={link.href}
+                        className="text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200 inline-flex items-center group"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-200">
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))
+                : DEFAULT_FOOTER_LINKS.discover.map((link, idx) => (
+                    <li key={`discover-default-${idx}`}>
+                      <Link
+                        to={link.href}
+                        className="text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200 inline-flex items-center group"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-200">
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
             </ul>
           </div>
 
           {/* For Business */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">For Business</h3>
-            <ul className="space-y-2">
-              {footerLinks.forBusiness.map((link) => (
-                <li key={link.href}>
-                  <Link 
-                    to={link.href} 
-                    className="text-sm hover:text-primary-400 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+          <div className="col-span-1">
+            <h3 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">
+              For Business
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.forBusiness && footerLinks.forBusiness.length > 0
+                ? footerLinks.forBusiness.map((link, idx) => (
+                    <li key={`forBusiness-${idx}`}>
+                      <Link
+                        to={link.href}
+                        className="text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200 inline-flex items-center group"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-200">
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))
+                : DEFAULT_FOOTER_LINKS.forBusiness.map((link, idx) => (
+                    <li key={`forBusiness-default-${idx}`}>
+                      <Link
+                        to={link.href}
+                        className="text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200 inline-flex items-center group"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-200">
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
             </ul>
           </div>
 
           {/* Support */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Support</h3>
-            <ul className="space-y-2">
-              {footerLinks.support.map((link) => (
-                <li key={link.href}>
-                  <Link 
-                    to={link.href} 
-                    className="text-sm hover:text-primary-400 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+          <div className="col-span-1">
+            <h3 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">
+              Support
+            </h3>
+            <ul className="space-y-3">
+              {footerLinks.support && footerLinks.support.length > 0
+                ? footerLinks.support.map((link, idx) => (
+                    <li key={`support-${idx}`}>
+                      <Link
+                        to={link.href}
+                        className="text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200 inline-flex items-center group"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-200">
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))
+                : DEFAULT_FOOTER_LINKS.support.map((link, idx) => (
+                    <li key={`support-default-${idx}`}>
+                      <Link
+                        to={link.href}
+                        className="text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200 inline-flex items-center group"
+                      >
+                        <span className="group-hover:translate-x-1 transition-transform duration-200">
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
             </ul>
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Contact</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2 text-sm">
-                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>George Town, Grand Cayman, Cayman Islands</span>
+          <div className="col-span-1">
+            <h3 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">
+              Contact
+            </h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200">
+                <MapPin className="w-5 h-5 shrink-0 text-orange-400 mt-0.5" />
+                <span className="leading-relaxed">
+                  George Town, Grand Cayman, Cayman Islands
+                </span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 flex-shrink-0" />
-                <a href="mailto:hello@cayeats.ky" className="hover:text-primary-400 transition-colors">
+              <li className="flex items-center gap-3 text-sm group cursor-pointer">
+                <Mail className="w-5 h-5 shrink-0 text-orange-400" />
+                <a
+                  href="mailto:hello@cayeats.ky"
+                  className="text-gray-400 group-hover:text-orange-400 transition-colors duration-200"
+                >
                   hello@cayeats.ky
                 </a>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Phone className="w-4 h-4 flex-shrink-0" />
-                <a href="tel:+13459999999" className="hover:text-primary-400 transition-colors">
+              <li className="flex items-center gap-3 text-sm group cursor-pointer">
+                <Phone className="w-5 h-5 shrink-0 text-orange-400" />
+                <a
+                  href="tel:+13459999999"
+                  className="text-gray-400 group-hover:text-orange-400 transition-colors duration-200"
+                >
                   +1 (345) 999-9999
                 </a>
               </li>
@@ -148,19 +262,25 @@ const Footer = () => {
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800"></div>
+
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-400">
+      <div className="bg-gray-950 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <p className="text-xs sm:text-sm text-gray-500">
               © {currentYear} CayEats. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
-              {footerLinks.legal.map((link) => (
-                <Link 
-                  key={link.href} 
+            <div className="flex items-center gap-6 flex-wrap justify-center md:justify-end">
+              {(footerLinks.legal && footerLinks.legal.length > 0
+                ? footerLinks.legal
+                : DEFAULT_FOOTER_LINKS.legal
+              ).map((link, idx) => (
+                <Link
+                  key={`legal-${idx}`}
                   to={link.href}
-                  className="text-sm text-gray-400 hover:text-primary-400 transition-colors"
+                  className="text-xs sm:text-sm text-gray-500 hover:text-orange-400 transition-colors duration-200"
                 >
                   {link.label}
                 </Link>

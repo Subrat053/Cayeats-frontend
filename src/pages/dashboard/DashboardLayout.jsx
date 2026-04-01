@@ -19,7 +19,6 @@ const NAV_ITEMS = [
   { label: "Overview", path: "/dashboard", icon: LayoutDashboard, exact: true },
   { label: "My Restaurant", path: "/dashboard/profile", icon: UtensilsCrossed },
   { label: "Menu", path: "/dashboard/menu", icon: ShoppingBag },
-  { label: "Products", path: "/dashboard/products", icon: ShoppingBag },
   { label: "Analytics", path: "/dashboard/analytics", icon: BarChart2 },
   {
     label: "Marketing",

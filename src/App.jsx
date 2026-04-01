@@ -22,6 +22,15 @@ import {
   PartnerPage,
   NotFoundPage,
   UserProfilePage,
+  CravingsPage,
+  HelpPage,
+  ContactPage,
+  FAQPage,
+  ReportPage,
+  TermsPage,
+  PrivacyPage,
+  CookiesPage,
+  AdvertisePage,
   AboutPage,
 } from "./pages";
 
@@ -41,6 +50,7 @@ import {
   AdminSiteSettings,
   AdminCRM,
   AdminBlog,
+  AdminFooterSettings,
 } from "./pages/admin";
 
 import {
@@ -86,6 +96,15 @@ function App() {
                   />
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/partner" element={<PartnerPage />} />
+                  <Route path="/cravings" element={<CravingsPage />} />
+                  <Route path="/help" element={<HelpPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/faq" element={<FAQPage />} />
+                  <Route path="/report" element={<ReportPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/cookies" element={<CookiesPage />} />
+                  <Route path="/advertise" element={<AdvertisePage />} />
                   <Route path="/profile" element={<UserProfilePage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
@@ -114,6 +133,7 @@ function App() {
                   <Route path="site-settings" element={<AdminSiteSettings />} />
                   <Route path="crm" element={<AdminCRM />} />
                   <Route path="blog" element={<AdminBlog />} />
+                  <Route path="footer" element={<AdminFooterSettings />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
 
