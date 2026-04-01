@@ -32,15 +32,6 @@ import {
   CookiesPage,
   AdvertisePage,
   AboutPage,
-  CravingsPage,
-  HelpPage,
-  ContactPage,
-  FAQPage,
-  ReportPage,
-  TermsPage,
-  PrivacyPage,
-  CookiesPage,
-  AdvertisePage,
 } from "./pages";
 
 import { LoginPage, RegisterPage } from "./pages/auth";
