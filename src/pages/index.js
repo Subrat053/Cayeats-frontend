@@ -6,6 +6,7 @@ import CuisineCategoryPage from './CuisineCategoryPage';
 import PartnerPage from './PartnerPage';
 import NotFoundPage from './NotFoundPage';
 import UserProfilePage from './UserProfilePage';
+import AboutPage from './About';
 
 export {
   HomePage,
@@ -16,4 +17,5 @@ export {
   PartnerPage,
   NotFoundPage,
   UserProfilePage,
+  AboutPage,
 };

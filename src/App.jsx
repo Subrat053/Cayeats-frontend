@@ -22,6 +22,7 @@ import {
   PartnerPage,
   NotFoundPage,
   UserProfilePage,
+  AboutPage,
 } from "./pages";
 
 import { LoginPage, RegisterPage } from "./pages/auth";
@@ -83,6 +84,7 @@ function App() {
                     path="/cuisines/:categoryId"
                     element={<CuisineCategoryPage />}
                   />
+                  <Route path="/about" element={<AboutPage />} />
                   <Route path="/partner" element={<PartnerPage />} />
                   <Route path="/profile" element={<UserProfilePage />} />
                   <Route path="*" element={<NotFoundPage />} />
