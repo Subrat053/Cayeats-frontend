@@ -7,15 +7,15 @@ import Input from "../../components/ui/Input";
 import logo from "../../assets/cayeats-rmbg.png";
 
 const LoginPage = () => {
-  const [email, setEmail]           = useState("");
-  const [password, setPassword]     = useState("");
-  const [role, setRole]             = useState("user");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError]           = useState("");
-  const [loading, setLoading]       = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,8 +41,12 @@ const LoginPage = () => {
             <img src={logo} alt="CayEats" className="h-13 w-20" />
           </Link>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1>
-          <p className="text-gray-500 mb-8">Sign in to your account to continue</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Welcome back
+          </h1>
+          <p className="text-gray-500 mb-8">
+            Sign in to your account to continue
+          </p>
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
@@ -93,39 +97,49 @@ const LoginPage = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
 
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 rounded text-orange-500" />
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded text-orange-500"
+                />
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
-              <Link to="/forgot-password" className="text-sm text-orange-500 hover:text-orange-600">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-orange-500 hover:text-orange-600"
+              >
                 Forgot password?
               </Link>
             </div>
 
-            <Button type="submit" className="w-full" size="lg" loading={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              loading={loading}
+            >
               Sign In
             </Button>
           </form>
 
           <p className="mt-8 text-center text-gray-600">
             Don't have an account?{" "}
-            <Link to="/register" className="text-orange-500 hover:text-orange-600 font-medium">
+            <Link
+              to="/register"
+              className="text-orange-500 hover:text-orange-600 font-medium"
+            >
               Sign up
             </Link>
           </p>
-
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs text-gray-500 mb-2 font-medium">Test Credentials:</p>
-            <div className="text-xs text-gray-600 space-y-1">
-              <p><strong>Admin:</strong> admin@cayeats.com / Admin@123</p>
-              <p><strong>Restaurant:</strong> your registered email</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -141,8 +155,8 @@ const LoginPage = () => {
           <div className="text-center text-white">
             <h2 className="text-4xl font-bold mb-4">Island Dining Authority</h2>
             <p className="text-xl text-orange-100 max-w-md">
-              Discover the best restaurants in the Cayman Islands and order
-              from your favorite delivery providers.
+              Discover the best restaurants in the Cayman Islands and order from
+              your favorite delivery providers.
             </p>
           </div>
         </div>

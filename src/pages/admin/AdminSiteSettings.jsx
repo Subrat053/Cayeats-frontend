@@ -15,73 +15,78 @@ import {
   CheckCircle2,
   Loader,
 } from "lucide-react";
+import {
+  getAdminSettings,
+  updateAdminSettings,
+  uploadAdminBrandingImage,
+} from "../../api/adminService";
 
 const AdminSiteSettings = () => {
   const [hasChanges, setHasChanges] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [uploadingField, setUploadingField] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const markChanged = () => setHasChanges(true);
 
-  // --- Logo & Branding - Load from localStorage ---
-  const [branding, setBranding] = useState(() => {
-    const stored = localStorage.getItem("siteBranding");
-    return stored
-      ? JSON.parse(stored)
-      : {
-          logoUrl: "/assets/cayeats-rmbg.png",
-          faviconUrl: "/favicon.ico",
-          siteName: "CayEats",
-          tagline: "Cayman Islands Food Delivery & Restaurant Guide",
-          primaryColor: "#E63946",
-          secondaryColor: "#1D3557",
-        };
+  // --- Logo & Branding ---
+  const [branding, setBranding] = useState({
+    logoUrl: "",
+    faviconUrl: "",
+    siteName: "",
+    tagline: "",
+    primaryColor: "#E63946",
+    secondaryColor: "#1D3557",
   });
 
-  // --- Payment Settings - Load from localStorage ---
-  const [payments, setPayments] = useState(() => {
-    const stored = localStorage.getItem("paymentSettings");
-    return stored
-      ? JSON.parse(stored)
-      : {
-          paypalEnabled: true,
-          paypalClientId: "AaBbCcDdEeFf_sandbox_client_id",
-          paypalSecret: "••••••••••••••••",
-          paypalMode: "sandbox",
-          stripeEnabled: false,
-          stripePublicKey: "",
-          stripeSecretKey: "",
-          currency: "USD",
-          taxRate: 0,
-        };
+  // --- Payment Settings ---
+  const [payments, setPayments] = useState({
+    paypalEnabled: true,
+    paypalClientId: "",
+    paypalSecret: "",
+    paypalMode: "sandbox",
+    stripeEnabled: false,
+    stripePublicKey: "",
+    stripeSecretKey: "",
+    currency: "USD",
+    taxRate: 0,
   });
 
-  // --- Notification Settings - Load from localStorage ---
-  const [notifications, setNotifications] = useState(() => {
-    const stored = localStorage.getItem("notificationSettings");
-    return stored
-      ? JSON.parse(stored)
-      : {
-          emailNewOrder: true,
-          emailNewClaim: true,
-          emailNewSubscription: true,
-          emailWeeklyReport: true,
-          adminEmail: "admin@cayeats.com",
-        };
+  // --- Notification Settings ---
+  const [notifications, setNotifications] = useState({
+    emailNewOrder: true,
+    emailNewClaim: true,
+    emailNewSubscription: true,
+    emailWeeklyReport: true,
+    adminEmail: "",
   });
+
+  // Load settings from backend on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      setPageLoading(true);
+      try {
+        const data = await getAdminSettings();
+        if (data) {
+          if (data.branding) setBranding(data.branding);
+          if (data.payments) setPayments(data.payments);
+          if (data.notifications) setNotifications(data.notifications);
+        }
+      } catch (err) {
+        setError("Failed to load settings: " + err.message);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleSave = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Persist settings to localStorage
-      localStorage.setItem("siteBranding", JSON.stringify(branding));
-      localStorage.setItem("paymentSettings", JSON.stringify(payments));
-      localStorage.setItem(
-        "notificationSettings",
-        JSON.stringify(notifications),
-      );
-
+      await updateAdminSettings({ branding, payments, notifications });
       setSuccess("Site settings saved successfully!");
       setHasChanges(false);
       setTimeout(() => setSuccess(null), 3000);
@@ -92,7 +97,22 @@ const AdminSiteSettings = () => {
     }
   };
 
-  const FileUploadBox = ({ label, currentUrl, onUpload, accept, hint }) => (
+  const handleImageUpload = async (field, file) => {
+    if (!file) return;
+    setUploadingField(field);
+    setError(null);
+    try {
+      const url = await uploadAdminBrandingImage(file);
+      setBranding((prev) => ({ ...prev, [field]: url }));
+      markChanged();
+    } catch (err) {
+      setError("Failed to upload image: " + err.message);
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
+  const FileUploadBox = ({ label, fieldKey, currentUrl, accept, hint }) => (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">{label}</label>
       <div className="flex items-start gap-4">
@@ -109,19 +129,31 @@ const AdminSiteSettings = () => {
         </div>
         <div className="flex-1">
           <div className="flex gap-2">
-            <label className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 text-sm">
-              <Upload className="w-4 h-4" />
-              Upload
+            <label
+              className={`flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 text-sm ${uploadingField === fieldKey ? "opacity-50 pointer-events-none" : ""}`}
+            >
+              {uploadingField === fieldKey ? (
+                <Loader className="w-4 h-4 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4" />
+              )}
+              {uploadingField === fieldKey ? "Uploading..." : "Upload"}
               <input
                 type="file"
                 accept={accept}
                 className="hidden"
-                onChange={() => markChanged()}
+                disabled={!!uploadingField}
+                onChange={(e) =>
+                  handleImageUpload(fieldKey, e.target.files?.[0])
+                }
               />
             </label>
             {currentUrl && (
               <button
-                onClick={markChanged}
+                onClick={() => {
+                  setBranding((prev) => ({ ...prev, [fieldKey]: "" }));
+                  markChanged();
+                }}
                 className="flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 text-sm"
               >
                 <Trash2 className="w-4 h-4" />
@@ -133,6 +165,14 @@ const AdminSiteSettings = () => {
       </div>
     </div>
   );
+
+  if (pageLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -198,12 +238,14 @@ const AdminSiteSettings = () => {
           <div className="grid md:grid-cols-2 gap-8">
             <FileUploadBox
               label="Site Logo"
+              fieldKey="logoUrl"
               currentUrl={branding.logoUrl}
               accept="image/png,image/jpeg,image/svg+xml,image/webp"
               hint="PNG, SVG, or WebP. Recommended: 200×60px. Max 2MB."
             />
             <FileUploadBox
               label="Favicon"
+              fieldKey="faviconUrl"
               currentUrl={branding.faviconUrl}
               accept="image/x-icon,image/png,image/svg+xml"
               hint="ICO, PNG, or SVG. Must be 32×32px or 16×16px."

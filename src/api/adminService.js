@@ -85,3 +85,23 @@ export const updateAdminSettings = async (data) => {
   const res = await api.put("/admin/settings", data);
   return res.data?.data;
 };
+
+export const uploadAdminBrandingImage = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await api.post("/admin/settings/upload-branding", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data?.url;
+};
+
+// Footer settings
+export const getFooterSettings = async () => {
+  const res = await api.get("/admin/footer");
+  return res.data?.data;
+};
+
+export const updateFooterSettings = async (footerData) => {
+  const res = await api.put("/admin/footer", { footer: footerData });
+  return res.data?.data;
+};
