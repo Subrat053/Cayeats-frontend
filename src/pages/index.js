@@ -6,7 +6,6 @@ import CuisineCategoryPage from "./CuisineCategoryPage";
 import PartnerPage from "./PartnerPage";
 import NotFoundPage from "./NotFoundPage";
 import UserProfilePage from "./UserProfilePage";
-import AboutPage from "./About";
 import CravingsPage from "./CravingsPage";
 import HelpPage from "./HelpPage";
 import ContactPage from "./ContactPage";
@@ -16,6 +15,7 @@ import TermsPage from "./TermsPage";
 import PrivacyPage from "./PrivacyPage";
 import CookiesPage from "./CookiesPage";
 import AdvertisePage from "./AdvertisePage";
+import AboutPage from './About';
 
 export {
   HomePage,
@@ -26,6 +26,15 @@ export {
   PartnerPage,
   NotFoundPage,
   UserProfilePage,
+  CravingsPage,
+  HelpPage,
+  ContactPage,
+  FAQPage,
+  ReportPage,
+  TermsPage,
+  PrivacyPage,
+  CookiesPage,
+  AdvertisePage,
   AboutPage,
   CravingsPage,
   HelpPage,

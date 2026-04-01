@@ -1,7 +1,22 @@
 import axios from "axios";
 
+const resolveApiBaseUrl = () => {
+  const configured = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  // Prevent mixed content: if app is served over HTTPS, never call an HTTP API.
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    configured.startsWith("http://")
+  ) {
+    return configured.replace("http://", "https://");
+  }
+
+  return configured;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: resolveApiBaseUrl(),
 });
 
 api.interceptors.request.use((config) => {
