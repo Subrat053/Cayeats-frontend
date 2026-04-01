@@ -27,6 +27,7 @@ import {
   Newspaper,
   BookOpen,
   UserCheck,
+  Layers,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/cayeats-rmbg.png";
@@ -60,6 +61,7 @@ const AdminLayout = () => {
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { name: "Data Import", href: "/admin/import", icon: FileSpreadsheet },
     { name: "Site Settings", href: "/admin/site-settings", icon: Globe },
+    { name: "Footer Settings", href: "/admin/footer", icon: Layers },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
