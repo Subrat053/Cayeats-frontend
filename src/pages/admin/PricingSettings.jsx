@@ -5,7 +5,7 @@ import {
   Star,
   Clock,
   Info,
-  Check,  
+  Check,
   Sparkles,
   Truck,
   Image,
@@ -49,11 +49,11 @@ const PricingSettings = () => {
       label: "Category Banner",
       desc: "Top banner per cuisine category page",
     },
-    classifiedAd: {
-      monthly: 120,
-      label: "Classified / Product Ad",
-      desc: "Real estate and general product ads",
-    },
+    // classifiedAd: {
+    //   monthly: 120,
+    //   label: "Classified / Product Ad",
+    //   desc: "Real estate and general product ads",
+    // },
   });
 
   const [promoPricing, setPromoPricing] = useState({
@@ -398,7 +398,7 @@ const PricingSettings = () => {
       </section>
 
       {/* ── 2. Product Plans ── */}
-      <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      {/* <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <SectionHeader
           icon={Tag}
           iconBg="bg-blue-100"
@@ -475,7 +475,7 @@ const PricingSettings = () => {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* ── 3. Advertising Rates ── */}
       <section className="bg-white rounded-xl border border-gray-200 overflow-hidden">
