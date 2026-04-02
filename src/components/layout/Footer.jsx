@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Facebook,
   Instagram,
-  Twitter,
+  Linkedin,
   Mail,
   Phone,
   MapPin,
@@ -105,22 +105,28 @@ const Footer = () => {
             </p>
             <div className="flex gap-3">
               <a
-                href="#"
+                href="https://www.facebook.com/profile.php?id=61582245794929"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2.5 bg-gray-800 rounded-lg hover:bg-orange-500 transition-all duration-300 transform hover:scale-110"
               >
                 <Facebook className="w-4 h-4" />
               </a>
               <a
-                href="#"
+                href="https://instagram.com/cay_eats"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2.5 bg-gray-800 rounded-lg hover:bg-orange-500 transition-all duration-300 transform hover:scale-110"
               >
                 <Instagram className="w-4 h-4" />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/in/cay-eats-810bb53bb/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2.5 bg-gray-800 rounded-lg hover:bg-orange-500 transition-all duration-300 transform hover:scale-110"
               >
-                <Twitter className="w-4 h-4" />
+                <Linkedin className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -242,10 +248,10 @@ const Footer = () => {
               <li className="flex items-center gap-3 text-sm group cursor-pointer">
                 <Mail className="w-5 h-5 shrink-0 text-orange-400" />
                 <a
-                  href="mailto:hello@cayeats.ky"
+                  href="mailto:info@cayeats.com"
                   className="text-gray-400 group-hover:text-orange-400 transition-colors duration-200"
                 >
-                  hello@cayeats.ky
+                  info@cayeats.com
                 </a>
               </li>
               <li className="flex items-center gap-3 text-sm group cursor-pointer">

@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { AdminSettingsProvider } from "./context/AdminSettingsContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { AppDataProvider } from "./context/AppDataContext";
+import { FooterPageProvider } from "./context/FooterPageContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import { MainLayout } from "./components/layout";
@@ -51,6 +52,8 @@ import {
   AdminCRM,
   AdminBlog,
   AdminFooterSettings,
+  AdminReports,
+  AdminFooterPages,
 } from "./pages/admin";
 
 import {
@@ -74,111 +77,118 @@ function App() {
       <FavoritesProvider>
         <AdminSettingsProvider>
           <AppDataProvider>
-            <Router>
-              <ScrollToTop />
-              <Routes>
-                {/* ── Auth Routes ── */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+            <FooterPageProvider>
+              <Router>
+                <ScrollToTop />
+                <Routes>
+                  {/* ── Auth Routes ── */}
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
 
-                {/* ── Public Routes ── */}
-                <Route element={<MainLayout />}>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/restaurants" element={<RestaurantsPage />} />
-                  <Route
-                    path="/restaurant/:slug"
-                    element={<RestaurantDetailPage />}
-                  />
-                  <Route path="/cuisines" element={<CuisinesPage />} />
-                  <Route
-                    path="/cuisines/:categoryId"
-                    element={<CuisineCategoryPage />}
-                  />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/partner" element={<PartnerPage />} />
-                  <Route path="/cravings" element={<CravingsPage />} />
-                  <Route path="/help" element={<HelpPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/report" element={<ReportPage />} />
-                  <Route path="/terms" element={<TermsPage />} />
-                  <Route path="/privacy" element={<PrivacyPage />} />
-                  <Route path="/cookies" element={<CookiesPage />} />
-                  <Route path="/advertise" element={<AdvertisePage />} />
-                  <Route path="/profile" element={<UserProfilePage />} />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Route>
+                  {/* ── Public Routes ── */}
+                  <Route element={<MainLayout />}>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/restaurants" element={<RestaurantsPage />} />
+                    <Route
+                      path="/restaurant/:slug"
+                      element={<RestaurantDetailPage />}
+                    />
+                    <Route path="/cuisines" element={<CuisinesPage />} />
+                    <Route
+                      path="/cuisines/:categoryId"
+                      element={<CuisineCategoryPage />}
+                    />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/partner" element={<PartnerPage />} />
+                    <Route path="/cravings" element={<CravingsPage />} />
+                    <Route path="/help" element={<HelpPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/faq" element={<FAQPage />} />
+                    <Route path="/report" element={<ReportPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/cookies" element={<CookiesPage />} />
+                    <Route path="/advertise" element={<AdvertisePage />} />
+                    <Route path="/profile" element={<UserProfilePage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Route>
 
-                {/* ── Admin Routes ── */}
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute allowedRoles={["admin"]}>
-                      <AdminLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="restaurants" element={<ManageRestaurants />} />
+                  {/* ── Admin Routes ── */}
                   <Route
-                    path="delivery-providers"
-                    element={<ManageDeliveryProviders />}
-                  />
-                  <Route path="banners" element={<ManageBanners />} />
-                  <Route path="pricing" element={<PricingSettings />} />
-                  <Route path="users" element={<UserManagement />} />
-                  <Route path="analytics" element={<Analytics />} />
-                  <Route path="import" element={<DataImport />} />
-                  <Route path="marketing" element={<AdminMarketing />} />
-                  <Route path="site-settings" element={<AdminSiteSettings />} />
-                  <Route path="crm" element={<AdminCRM />} />
-                  <Route path="blog" element={<AdminBlog />} />
-                  <Route path="footer" element={<AdminFooterSettings />} />
-                  <Route path="settings" element={<AdminSettings />} />
-                </Route>
+                    path="/admin"
+                    element={
+                      <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="restaurants" element={<ManageRestaurants />} />
+                    <Route
+                      path="delivery-providers"
+                      element={<ManageDeliveryProviders />}
+                    />
+                    <Route path="banners" element={<ManageBanners />} />
+                    <Route path="reports" element={<AdminReports />} />
+                    <Route path="pricing" element={<PricingSettings />} />
+                    <Route path="users" element={<UserManagement />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="import" element={<DataImport />} />
+                    <Route path="marketing" element={<AdminMarketing />} />
+                    <Route
+                      path="site-settings"
+                      element={<AdminSiteSettings />}
+                    />
+                    <Route path="crm" element={<AdminCRM />} />
+                    <Route path="blog" element={<AdminBlog />} />
+                    <Route path="footer" element={<AdminFooterSettings />} />
+                    <Route path="footer-pages" element={<AdminFooterPages />} />
+                    <Route path="settings" element={<AdminSettings />} />
+                  </Route>
 
-                {/* ── Dashboard Routes (restaurant only) ── */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={["restaurant"]}>
-                      <DashboardLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<DashboardOverview />} />
-                  <Route path="profile" element={<DashboardProfile />} />
-                  <Route path="menu" element={<DashboardMenu />} />
-                  <Route path="products" element={<Products />} />
-                  <Route path="analytics" element={<DashboardAnalytics />} />
+                  {/* ── Dashboard Routes (restaurant only) ── */}
                   <Route
-                    path="advertising"
-                    element={<DashboardAdvertising />}
-                  />
-                  <Route
-                    path="featured-listings"
-                    element={<DashboardFeaturedListings />}
-                  />
-                  <Route
-                    path="tonights-cravings"
-                    element={<DashboardTonightsCravings />}
-                  />
-                  <Route path="banner-ads" element={<DashboardBannerAds />} />
-                  <Route
-                    path="preferred-delivery"
-                    element={<DashboardPreferredDelivery />}
-                  />
-                  <Route path="orders" element={<DashboardOrders />} />
-                  {/* ✅ New Stripe subscription page */}
-                  <Route
-                    path="subscription"
-                    element={<DashboardSubscription />}
-                  />
-                  {/* ✅ Billing / transaction history */}
-                  <Route path="billing" element={<DashboardBilling />} />
-                </Route>
-              </Routes>
-            </Router>
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={["restaurant"]}>
+                        <DashboardLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<DashboardOverview />} />
+                    <Route path="profile" element={<DashboardProfile />} />
+                    <Route path="menu" element={<DashboardMenu />} />
+                    <Route path="products" element={<Products />} />
+                    <Route path="analytics" element={<DashboardAnalytics />} />
+                    <Route
+                      path="advertising"
+                      element={<DashboardAdvertising />}
+                    />
+                    <Route
+                      path="featured-listings"
+                      element={<DashboardFeaturedListings />}
+                    />
+                    <Route
+                      path="tonights-cravings"
+                      element={<DashboardTonightsCravings />}
+                    />
+                    <Route path="banner-ads" element={<DashboardBannerAds />} />
+                    <Route
+                      path="preferred-delivery"
+                      element={<DashboardPreferredDelivery />}
+                    />
+                    <Route path="orders" element={<DashboardOrders />} />
+                    {/* ✅ New Stripe subscription page */}
+                    <Route
+                      path="subscription"
+                      element={<DashboardSubscription />}
+                    />
+                    {/* ✅ Billing / transaction history */}
+                    <Route path="billing" element={<DashboardBilling />} />
+                  </Route>
+                </Routes>
+              </Router>
+            </FooterPageProvider>
           </AppDataProvider>
         </AdminSettingsProvider>
       </FavoritesProvider>

@@ -105,3 +105,86 @@ export const updateFooterSettings = async (footerData) => {
   const res = await api.put("/admin/footer", { footer: footerData });
   return res.data?.data;
 };
+
+// Report Management
+export const getAllReports = async () => {
+  const res = await api.get("/admin/reports");
+  return res.data?.data || [];
+};
+
+export const getReportById = async (id) => {
+  const res = await api.get(`/admin/reports/${id}`);
+  return res.data?.data;
+};
+
+export const getReportsByStatus = async (status) => {
+  const res = await api.get(`/admin/reports/status/${status}`);
+  return res.data?.data || [];
+};
+
+export const updateReportStatus = async (id, status) => {
+  const res = await api.put(`/admin/reports/${id}/status`, { status });
+  return res.data?.data;
+};
+
+export const replyToReport = async (id, adminReply, adminNotes = "") => {
+  const res = await api.put(`/admin/reports/${id}/reply`, {
+    adminReply,
+    adminNotes,
+  });
+  return res.data?.data;
+};
+
+export const deleteReport = async (id) => {
+  const res = await api.delete(`/admin/reports/${id}`);
+  return res.data;
+};
+
+// ─── Footer Page Management ───────────────────────────────
+export const getAllFooterPages = async () => {
+  const res = await api.get("/admin/footer-pages");
+  return res.data?.data || [];
+};
+
+export const getFooterPageBySlug = async (slug) => {
+  const res = await api.get(`/admin/footer-pages/${slug}`);
+  return res.data?.data;
+};
+
+export const createOrUpdateFooterPage = async (slug, data) => {
+  const res = await api.put(`/admin/footer-pages/${slug}`, data);
+  return res.data?.data;
+};
+
+export const addFAQ = async (slug, faqData) => {
+  const res = await api.post(`/admin/footer-pages/${slug}/faq`, faqData);
+  return res.data?.data;
+};
+
+export const updateFAQ = async (slug, faqId, faqData) => {
+  const res = await api.put(
+    `/admin/footer-pages/${slug}/faq/${faqId}`,
+    faqData,
+  );
+  return res.data?.data;
+};
+
+export const deleteFAQ = async (slug, faqId) => {
+  const res = await api.delete(`/admin/footer-pages/${slug}/faq/${faqId}`);
+  return res.data?.data;
+};
+
+export const updateContactInfo = async (slug, contactData) => {
+  const res = await api.put(`/admin/footer-pages/${slug}/contact`, contactData);
+  return res.data?.data;
+};
+
+export const togglePageStatus = async (slug) => {
+  const res = await api.put(`/admin/footer-pages/${slug}/toggle`);
+  return res.data?.data;
+};
+
+export const initializeDefaultPages = async () => {
+  const res = await api.post("/admin/footer-pages/initialize");
+  return res.data;
+};

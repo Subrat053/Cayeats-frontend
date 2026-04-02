@@ -28,3 +28,19 @@ export const trackDeliveryClick = async (restaurantId, providerName) => {
     // fail silently - don't break UX for analytics
   }
 };
+
+export const submitContact = async (contactData) => {
+  const res = await api.post("/browse/contact", contactData);
+  return res.data;
+};
+
+export const submitReportIssue = async (reportData) => {
+  const res = await api.post("/browse/report-issue", reportData);
+  return res.data;
+};
+
+// ─── Footer Pages ─────────────────────────────────────────
+export const getFooterPage = async (slug) => {
+  const res = await api.get(`/admin/public/footer-pages/${slug}`);
+  return res.data?.data;
+};

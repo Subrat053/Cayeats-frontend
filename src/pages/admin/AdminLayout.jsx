@@ -28,6 +28,7 @@ import {
   BookOpen,
   UserCheck,
   Layers,
+  Flag,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/cayeats-rmbg.png";
@@ -53,6 +54,7 @@ const AdminLayout = () => {
       icon: Truck,
     },
     { name: "Banners & Ads", href: "/admin/banners", icon: Image },
+    { name: "Reports", href: "/admin/reports", icon: Flag },
     { name: "Pricing", href: "/admin/pricing", icon: DollarSign },
     { name: "Marketing", href: "/admin/marketing", icon: Megaphone },
     { name: "CRM", href: "/admin/crm", icon: UserCheck },
@@ -62,6 +64,7 @@ const AdminLayout = () => {
     { name: "Data Import", href: "/admin/import", icon: FileSpreadsheet },
     { name: "Site Settings", href: "/admin/site-settings", icon: Globe },
     { name: "Footer Settings", href: "/admin/footer", icon: Layers },
+    { name: "Footer Pages", href: "/admin/footer-pages", icon: Newspaper },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 

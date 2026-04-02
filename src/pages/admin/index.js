@@ -13,6 +13,8 @@ import AdminSiteSettings from "./AdminSiteSettings";
 import AdminCRM from "./AdminCRM";
 import AdminBlog from "./AdminBlog";
 import AdminFooterSettings from "./AdminFooterSettings";
+import AdminReports from "./AdminReports";
+import AdminFooterPages from "./AdminFooterPages";
 
 export {
   AdminLayout,
@@ -30,4 +32,6 @@ export {
   AdminCRM,
   AdminBlog,
   AdminFooterSettings,
+  AdminReports,
+  AdminFooterPages,
 };
