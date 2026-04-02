@@ -35,11 +35,10 @@ export function AuthProvider({ children }) {
   const login = async (email, password, type = "user", navigate) => {
     setError(null);
 
-    // ✅ both admin and restaurant use /restaurant/login
-    // admin login goes to same endpoint, backend checks role
+    // ✅ Role-based login endpoints
     const endpoints = {
       restaurant: "/restaurant/login",
-      admin: "/restaurant/login", // ✅ same endpoint, role checked in backend
+      admin: "/admin/login", // ✅ Correct admin endpoint
       user: "/user/login",
     };
     const endpoint = endpoints[type] || endpoints.user;
