@@ -251,9 +251,9 @@ const AdminFooterPages = () => {
         <button
           onClick={handleInitializePages}
           disabled={saving}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+          className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 text-base border-2 border-blue-700"
         >
-          <Plus size={18} />
+          <Plus size={20} />
           Initialize Default Pages
         </button>
       </div>
@@ -366,9 +366,9 @@ const AdminFooterPages = () => {
                   <button
                     onClick={handleSavePage}
                     disabled={saving}
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full bg-orange-500 text-white px-6 py-3 rounded font-semibold hover:bg-orange-600 active:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 text-base border-2 border-orange-600"
                   >
-                    <Save size={18} />
+                    <Save size={20} />
                     Save Changes
                   </button>
                 </div>
@@ -404,9 +404,9 @@ const AdminFooterPages = () => {
                       <button
                         onClick={handleAddFAQ}
                         disabled={saving}
-                        className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full bg-green-600 text-white px-6 py-3 rounded font-semibold hover:bg-green-700 active:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 text-base border-2 border-green-700"
                       >
-                        <Plus size={18} />
+                        <Plus size={20} />
                         Add FAQ
                       </button>
                     </div>
@@ -470,16 +470,16 @@ const AdminFooterPages = () => {
                                       onClick={() =>
                                         handleUpdateFAQ(faq._id, editingFAQData)
                                       }
-                                      className="flex-1 bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 flex items-center justify-center gap-2"
+                                      className="flex-1 bg-green-600 text-white px-4 py-2 rounded font-semibold hover:bg-green-700 active:bg-green-800 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-green-700"
                                     >
-                                      <Save size={16} />
+                                      <Save size={18} />
                                       Save
                                     </button>
                                     <button
                                       onClick={() => setEditingFAQData(null)}
-                                      className="flex-1 bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500 flex items-center justify-center gap-2"
+                                      className="flex-1 bg-gray-500 text-white px-4 py-2 rounded font-semibold hover:bg-gray-600 active:bg-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-gray-600"
                                     >
-                                      <X size={16} />
+                                      <X size={18} />
                                       Cancel
                                     </button>
                                   </div>
@@ -492,16 +492,16 @@ const AdminFooterPages = () => {
                                   <div className="flex gap-2">
                                     <button
                                       onClick={() => setEditingFAQData(faq)}
-                                      className="flex-1 bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2"
+                                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-blue-700"
                                     >
-                                      <Edit2 size={16} />
+                                      <Edit2 size={18} />
                                       Edit
                                     </button>
                                     <button
                                       onClick={() => handleDeleteFAQ(faq._id)}
-                                      className="flex-1 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 flex items-center justify-center gap-2"
+                                      className="flex-1 bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700 active:bg-red-800 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-red-700"
                                     >
-                                      <Trash2 size={16} />
+                                      <Trash2 size={18} />
                                       Delete
                                     </button>
                                   </div>
@@ -612,9 +612,9 @@ const AdminFooterPages = () => {
                     <button
                       onClick={handleUpdateContact}
                       disabled={saving}
-                      className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full bg-orange-500 text-white px-6 py-3 rounded font-semibold hover:bg-orange-600 active:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 text-base border-2 border-orange-600"
                     >
-                      <Save size={18} />
+                      <Save size={20} />
                       Save Contact Info
                     </button>
                   </div>
