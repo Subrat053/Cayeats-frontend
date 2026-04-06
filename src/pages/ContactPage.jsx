@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { submitContact, getFooterPage } from "../api/browseServices";
 import { useFooterPage } from "../context/FooterPageContext";
+import MarkdownRenderer from "../components/ui/MarkdownRenderer";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({

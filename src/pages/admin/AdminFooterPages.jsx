@@ -372,21 +372,107 @@ const AdminFooterPages = () => {
                   {/* Content Editor for non-special pages */}
                   {selectedPage.slug !== "faq" &&
                     selectedPage.slug !== "contact" && (
-                      <div>
-                        <label className="block text-sm font-medium mb-2">
-                          Content
-                        </label>
-                        <textarea
-                          value={formData.content}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              content: e.target.value,
-                            })
-                          }
-                          rows={8}
-                          className="w-full px-3 py-2 border border-gray-300 rounded"
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium mb-2">
+                            Content (Markdown Supported)
+                          </label>
+                          <textarea
+                            value={formData.content}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                content: e.target.value,
+                              })
+                            }
+                            rows={12}
+                            className="w-full px-3 py-2 border border-gray-300 rounded font-mono text-sm"
+                            placeholder="Write content using markdown format:
+# Heading 1
+## Heading 2
+### Heading 3
+
+**Bold text**
+*Italic text*
+
+- Bullet point
+- Another item
+
+1. Numbered list
+2. Another item
+
+Use these formatting options for professional looking pages."
+                          />
+
+                          {/* Markdown Hints */}
+                          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                            <h4 className="font-semibold text-sm text-blue-900 mb-2">
+                              📝 Markdown Quick Guide:
+                            </h4>
+                            <ul className="text-xs text-blue-800 space-y-1">
+                              <li>
+                                <strong># Title</strong> - Large heading
+                              </li>
+                              <li>
+                                <strong>## Subtitle</strong> - Medium heading
+                              </li>
+                              <li>
+                                <strong>***text***</strong> - Bold text
+                              </li>
+                              <li>
+                                <strong>- item</strong> - Bullet lists
+                              </li>
+                              <li>
+                                <strong>1. item</strong> - Numbered lists
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        {/* Preview Section */}
+                        <div>
+                          <label className="block text-sm font-medium mb-2">
+                            Preview (How it will look)
+                          </label>
+                          <div className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-50 overflow-y-auto max-h-60 prose prose-sm">
+                            {formData.content ? (
+                              <div
+                                className="text-sm text-gray-700 space-y-2"
+                                dangerouslySetInnerHTML={{
+                                  __html: formData.content
+                                    .split("\n")
+                                    .map((line) => {
+                                      // Simple markdown preview
+                                      if (line.startsWith("# "))
+                                        return `<h2 class="font-bold text-gray-900">${line.replace("# ", "")}</h2>`;
+                                      if (line.startsWith("## "))
+                                        return `<h3 class="font-bold text-gray-800">${line.replace("## ", "")}</h3>`;
+                                      if (line.startsWith("### "))
+                                        return `<h4 class="font-bold text-gray-700">${line.replace("### ", "")}</h4>`;
+                                      if (line.startsWith("- "))
+                                        return `<li class="ml-4">${line.replace("- ", "")}</li>`;
+                                      if (line.match(/^\d+\. /))
+                                        return `<li class="ml-4">${line}</li>`;
+                                      if (line.includes("**"))
+                                        return `<p>${line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</p>`;
+                                      if (
+                                        line.includes("*") &&
+                                        !line.includes("**")
+                                      )
+                                        return `<p>${line.replace(/\*(.+?)\*/g, "<em>$1</em>")}</p>`;
+                                      if (line.trim()) return `<p>${line}</p>`;
+                                      return "";
+                                    })
+                                    .join(""),
+                                }}
+                              />
+                            ) : (
+                              <p className="text-gray-400 italic">
+                                Preview will appear here
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
 

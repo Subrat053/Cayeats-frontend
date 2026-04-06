@@ -252,7 +252,7 @@ const Analytics = () => {
             <button
               key={range}
               onClick={() => setTimeRange(range)}
-              className={`px-4 py-2 rounded-lg font-bold capitalize transition-all ${
+              className={`px-4 py-2 rounde+d-lg font-bold capitalize transition-all ${
                 timeRange === range
                   ? "bg-orange-500 text-white shadow-md"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"

@@ -9,6 +9,11 @@ import {
   Award,
   ArrowRight,
 } from "lucide-react";
+import {
+  StyledContentBox,
+  StyledSection,
+  StyledFeatureBox,
+} from "../components/ui/StyledContentSection";
 
 const AdvertisePage = () => {
   const advertisingOptions = [
@@ -106,25 +111,14 @@ const AdvertisePage = () => {
             Why Advertise on CayEats?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => {
-              const IconComponent = benefit.icon;
-              return (
-                <div
-                  key={index}
-                  className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-orange-500/50 transition-colors"
-                >
-                  <div className="p-3 bg-orange-500/20 rounded-lg w-fit mb-4">
-                    <IconComponent className="w-6 h-6 text-orange-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </div>
-              );
-            })}
+            {benefits.map((benefit, index) => (
+              <StyledFeatureBox
+                key={index}
+                icon={benefit.icon}
+                title={benefit.title}
+                description={benefit.description}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -233,43 +227,22 @@ const AdvertisePage = () => {
             Frequently Asked Questions
           </h2>
           <div className="space-y-6">
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                How quickly will I see results?
-              </h3>
-              <p className="text-gray-400">
-                Most customers see increased engagement within the first few
-                days. Full results typically appear within 2-4 weeks.
-              </p>
-            </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Can I track the performance of my ads?
-              </h3>
-              <p className="text-gray-400">
-                Yes! We provide detailed analytics dashboards so you can track
-                clicks, impressions, and conversions from your advertising.
-              </p>
-            </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                What if I want to modify my ads?
-              </h3>
-              <p className="text-gray-400">
-                You can update your advertising content anytime. Contact our
-                team for free revisions and optimization suggestions.
-              </p>
-            </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Do you offer custom advertising packages?
-              </h3>
-              <p className="text-gray-400">
-                Absolutely! For larger campaigns or unique needs, we offer
-                custom packages. Contact our sales team for a personalized
-                quote.
-              </p>
-            </div>
+            <StyledContentBox
+              title="How quickly will I see results?"
+              description="Most customers see increased engagement within the first few days. Full results typically appear within 2-4 weeks."
+            />
+            <StyledContentBox
+              title="Can I track the performance of my ads?"
+              description="Yes! We provide detailed analytics dashboards so you can track clicks, impressions, and conversions from your advertising."
+            />
+            <StyledContentBox
+              title="What if I want to modify my ads?"
+              description="You can update your advertising content anytime. Contact our team for free revisions and optimization suggestions."
+            />
+            <StyledContentBox
+              title="Do you offer custom advertising packages?"
+              description="Absolutely! For larger campaigns or unique needs, we offer custom packages. Contact our sales team for a personalized quote."
+            />
           </div>
         </div>
       </section>
