@@ -274,11 +274,11 @@ const AdminFooterPages = () => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Footer Page Management</h1>
+        <h1 className="text-xl lg:text-3xl font-bold">Footer Page Management</h1>
         <button
           onClick={handleInitializePages}
           disabled={saving}
-          className="bg-secondary-500 text-white px-6 py-3 rounded font-bold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-sm"
+          className="bg-secondary-500 text-white px-6 py-3 rounded font-bold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-xs lg:text-sm"
         >
           <Plus size={18} />
           Initialize Default Pages
