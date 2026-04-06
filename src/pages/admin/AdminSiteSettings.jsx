@@ -187,7 +187,7 @@ const AdminSiteSettings = () => {
         <button
           onClick={handleSave}
           disabled={!hasChanges || loading}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors ${hasChanges && !loading ? "bg-primary text-white hover:bg-primary/90" : "bg-gray-100 text-gray-400 cursor-not-allowed"}`}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors ${hasChanges && !loading ? "bg-amber-300 text-white hover:bg-primary/90" : "bg-amber-100 text-gray-400 cursor-not-allowed"}`}
         >
           {loading ? (
             <>
@@ -195,9 +195,9 @@ const AdminSiteSettings = () => {
               Saving...
             </>
           ) : (
-            <>
-              <Save className="w-4 h-4" />
-              Save Settings
+            < >
+              <Save className="w-4 h-4 text-amber-600 " />
+              <span className=" text-amber-600 ">Save Settings</span>
             </>
           )}
         </button>
