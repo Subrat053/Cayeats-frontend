@@ -191,7 +191,7 @@ const CookiesPage = () => {
             </p>
             <a
               href="/contact"
-              className="inline-block px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors"
+              className="inline-block px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition-colors"
             >
               Contact Us
             </a>

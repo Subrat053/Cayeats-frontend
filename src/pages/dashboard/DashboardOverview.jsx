@@ -159,7 +159,7 @@ const DashboardOverview = () => {
 
         <button
           onClick={() => navigate("/dashboard/profile")}
-          className="bg-white text-gray-800 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100"
+          className="bg-white text-gray-800 px-6 py-2 rounded-lg font-bold hover:bg-gray-100"
         >
           Edit Profile
         </button>

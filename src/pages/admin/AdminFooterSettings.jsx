@@ -450,7 +450,7 @@ const AdminFooterSettings = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleAddLink(sectionKey)}
-                        className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 font-medium"
+                        className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 font-bold"
                       >
                         Add Link
                       </button>
@@ -460,7 +460,7 @@ const AdminFooterSettings = () => {
                           setEditLabel("");
                           setEditHref("");
                         }}
-                        className="flex-1 px-3 py-2 bg-gray-400 text-white rounded-lg text-sm hover:bg-gray-500 font-medium"
+                        className="flex-1 px-3 py-2 bg-gray-400 text-white rounded-lg text-sm hover:bg-gray-500 font-bold"
                       >
                         Cancel
                       </button>
@@ -474,13 +474,13 @@ const AdminFooterSettings = () => {
           <div className="mt-8 flex gap-3">
             <button
               onClick={() => window.location.reload()}
-              className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition-colors"
             >
               Refresh
             </button>
             <button
               onClick={() => window.history.back()}
-              className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+              className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition-colors"
             >
               Back
             </button>

@@ -71,7 +71,7 @@ const DashboardBilling = () => {
         </div>
         <button
           onClick={() => navigate("/dashboard/subscription")}
-          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm font-bold"
         >
           <CreditCard className="w-4 h-4" />
           Upgrade Plan

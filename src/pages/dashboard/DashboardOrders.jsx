@@ -313,7 +313,7 @@ const DashboardOrders = () => {
                           handleStatusUpdate(order._id, nextStatus)
                         }
                         disabled={updatingId === order._id}
-                        className="px-3 py-1.5 bg-orange-500 text-white rounded-lg text-xs font-medium hover:bg-orange-600 disabled:opacity-50"
+                        className="px-3 py-1.5 bg-orange-500 text-white rounded-lg text-xs font-bold hover:bg-orange-600 disabled:opacity-50"
                       >
                         {updatingId === order._id
                           ? "..."

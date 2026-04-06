@@ -92,7 +92,7 @@ const AdvertisePage = () => {
           </p>
           <Link
             to="/contact"
-            className="inline-block px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors"
+            className="inline-block px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition-colors"
           >
             Get Started
           </Link>
@@ -212,13 +212,13 @@ const AdvertisePage = () => {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               to="/contact"
-              className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+              className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition-colors flex items-center gap-2"
             >
               Contact Sales <ArrowRight className="w-4 h-4" />
             </Link>
             <a
               href="tel:+13459999999"
-              className="px-8 py-3 border border-orange-500 text-orange-400 hover:bg-orange-500/10 font-semibold rounded-lg transition-colors"
+              className="px-8 py-3 border border-orange-500 text-orange-400 hover:bg-orange-500/10 font-bold rounded-lg transition-colors"
             >
               Call Us
             </a>

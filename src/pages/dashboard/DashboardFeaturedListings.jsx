@@ -122,7 +122,7 @@ const DashboardFeaturedListings = () => {
         {/* ✅ Always show Add button */}
         <button
           onClick={() => setShowPurchase((p) => !p)}
-          className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+          className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-bold"
         >
           <Star className="w-4 h-4" />
           {showPurchase ? "Cancel" : "Add Listing"}
@@ -324,7 +324,7 @@ const DashboardFeaturedListings = () => {
               <button
                 onClick={handlePurchase}
                 disabled={purchasing}
-                className="w-full flex items-center justify-center gap-2 bg-orange-500 text-white py-3 rounded-lg font-medium hover:bg-orange-600 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 disabled:opacity-50"
               >
                 <CreditCard className="w-5 h-5" />
                 {purchasing ? "Processing..." : "Purchase Featured Listing"}

@@ -238,7 +238,7 @@ const HomePage = () => {
               <div className="text-center mt-8">
                 <Link
                   to="/restaurants"
-                  className="inline-block bg-orange-500 text-white px-8 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                  className="inline-block bg-orange-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors"
                 >
                   View All {allRestaurants.length} Restaurants
                 </Link>
@@ -269,12 +269,12 @@ const HomePage = () => {
               </p>
               <div className="flex gap-4 flex-wrap">
                 <Link to="/partner">
-                  <button className="bg-orange-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors">
+                  <button className="bg-orange-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors">
                     Partner With Us
                   </button>
                 </Link>
                 <Link to="/register?type=restaurant">
-                  <button className="border border-white/50 text-white px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors">
+                  <button className="border border-white/50 text-white px-6 py-3 rounded-lg font-bold hover:bg-white/10 transition-colors">
                     Claim Your Listing
                   </button>
                 </Link>

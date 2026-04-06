@@ -280,7 +280,7 @@ const DashboardClaimSubscription = () => {
             <div className="flex flex-col gap-2 sm:items-end shrink-0">
               <button
                 onClick={() => setShowPlans((p) => !p)}
-                className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600"
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-bold hover:bg-orange-600"
               >
                 {currentPlanKey === "platinum" ? "Renew Plan" : "Upgrade Plan"}
               </button>
@@ -332,7 +332,7 @@ const DashboardClaimSubscription = () => {
           </div>
           <button
             onClick={() => setShowPlans(true)}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 shrink-0"
+            className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-bold hover:bg-red-600 shrink-0"
           >
             Reactivate Now
           </button>
@@ -357,7 +357,7 @@ const DashboardClaimSubscription = () => {
           </div>
           <button
             onClick={() => setShowPlans(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 shrink-0"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-bold hover:bg-blue-600 shrink-0"
           >
             View Plans
           </button>

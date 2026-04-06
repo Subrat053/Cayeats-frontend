@@ -102,7 +102,7 @@ const FAQPage = () => {
           <p className="text-gray-400 mb-6">
             Our support team is here to help. Get in touch with us anytime.
           </p>
-          <button className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition-colors duration-200">
+          <button className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition-colors duration-200">
             <a href="/contact">Contact Support</a>
           </button>
         </div>

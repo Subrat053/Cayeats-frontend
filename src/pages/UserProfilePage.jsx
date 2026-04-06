@@ -142,7 +142,7 @@ const UserProfilePage = () => {
               </p>
               <Link
                 to="/restaurants"
-                className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors"
+                className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors"
               >
                 Explore Restaurants <ChevronRight className="w-4 h-4" />
               </Link>
@@ -189,7 +189,7 @@ const UserProfilePage = () => {
                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none"
                   />
                 </div>
-                <button className="px-5 py-2.5 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors">
+                <button className="px-5 py-2.5 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors">
                   Save Changes
                 </button>
               </div>

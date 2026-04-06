@@ -152,7 +152,7 @@ const CuisineCategoryPage = () => {
               </div>
               <Link
                 to={`/restaurant/${featuredRestaurant._id}`}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white text-orange-600 rounded-xl font-semibold hover:bg-orange-50 transition-colors shrink-0"
+                className="flex items-center gap-2 px-5 py-2.5 bg-white text-orange-600 rounded-xl font-bold hover:bg-orange-50 transition-colors shrink-0"
               >
                 View Restaurant <ExternalLink className="w-4 h-4" />
               </Link>
@@ -221,7 +221,7 @@ const CuisineCategoryPage = () => {
             </p>
             <Link
               to="/restaurants"
-              className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium"
+              className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-bold"
             >
               Browse All Restaurants
             </Link>

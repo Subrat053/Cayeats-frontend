@@ -278,7 +278,7 @@ const AdminFooterPages = () => {
         <button
           onClick={handleInitializePages}
           disabled={saving}
-          className="bg-secondary-500 text-white px-6 py-3 rounded font-semibold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-sm"
+          className="bg-secondary-500 text-white px-6 py-3 rounded font-bold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-sm"
         >
           <Plus size={18} />
           Initialize Default Pages
@@ -393,7 +393,7 @@ const AdminFooterPages = () => {
                   <button
                     onClick={handleSavePage}
                     disabled={saving}
-                    className="w-full bg-primary-500 text-white px-6 py-3 rounded font-semibold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                    className="w-full bg-primary-500 text-white px-6 py-3 rounded font-bold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                   >
                     <Save size={18} />
                     Save Changes
@@ -431,7 +431,7 @@ const AdminFooterPages = () => {
                       <button
                         onClick={handleAddFAQ}
                         disabled={saving}
-                        className="w-full bg-success-500 text-white px-6 py-3 rounded font-semibold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                        className="w-full bg-success-500 text-white px-6 py-3 rounded font-bold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                       >
                         <Plus size={18} />
                         Add FAQ
@@ -497,14 +497,14 @@ const AdminFooterPages = () => {
                                       onClick={() =>
                                         handleUpdateFAQ(faq._id, editingFAQData)
                                       }
-                                      className="flex-1 bg-success-500 text-white px-4 py-2 rounded font-semibold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      className="flex-1 bg-success-500 text-white px-4 py-2 rounded font-bold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
                                       <Save size={16} />
                                       Save
                                     </button>
                                     <button
                                       onClick={() => setEditingFAQData(null)}
-                                      className="flex-1 bg-gray-500 text-white px-4 py-2 rounded font-semibold hover:bg-gray-600 active:bg-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      className="flex-1 bg-gray-500 text-white px-4 py-2 rounded font-bold hover:bg-gray-600 active:bg-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
                                       <X size={16} />
                                       Cancel
@@ -519,14 +519,14 @@ const AdminFooterPages = () => {
                                   <div className="flex gap-2">
                                     <button
                                       onClick={() => setEditingFAQData(faq)}
-                                      className="flex-1 bg-secondary-500 text-white px-4 py-2 rounded font-semibold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      className="flex-1 bg-secondary-500 text-white px-4 py-2 rounded font-bold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
                                       <Edit2 size={16} />
                                       Edit
                                     </button>
                                     <button
                                       onClick={() => handleDeleteFAQ(faq._id)}
-                                      className="flex-1 bg-error-500 text-white px-4 py-2 rounded font-semibold hover:bg-error-600 active:bg-error-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      className="flex-1 bg-error-500 text-white px-4 py-2 rounded font-bold hover:bg-error-600 active:bg-error-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
                                       <Trash2 size={16} />
                                       Delete
@@ -639,7 +639,7 @@ const AdminFooterPages = () => {
                     <button
                       onClick={handleUpdateContact}
                       disabled={saving}
-                      className="w-full bg-primary-500 text-white px-6 py-3 rounded font-semibold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                      className="w-full bg-primary-500 text-white px-6 py-3 rounded font-bold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                     >
                       <Save size={18} />
                       Save Contact Info

@@ -408,7 +408,7 @@ const AdminReports = () => {
                       <button
                         onClick={handleReply}
                         disabled={actionLoading}
-                        className="flex-1 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:bg-gray-400"
+                        className="flex-1 px-4 py-2 bg-primary-600 text-white font-bold rounded-lg hover:bg-primary-700 disabled:bg-gray-400"
                       >
                         {actionLoading ? "Sending..." : "Send Response"}
                       </button>
@@ -417,7 +417,7 @@ const AdminReports = () => {
                           handleStatusChange(selectedReport._id, "closed")
                         }
                         disabled={actionLoading}
-                        className="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50"
+                        className="px-4 py-2 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50"
                       >
                         Mark as Closed
                       </button>
@@ -439,7 +439,7 @@ const AdminReports = () => {
               </button>
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300"
+                className="px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300"
               >
                 Close
               </button>

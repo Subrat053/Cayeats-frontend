@@ -129,7 +129,7 @@ const DashboardTonightsCravings = () => {
         {!active && (
           <button
             onClick={() => setShowForm((p) => !p)}
-            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-bold"
           >
             {showForm ? "Cancel" : "Create Promotion"}
           </button>
