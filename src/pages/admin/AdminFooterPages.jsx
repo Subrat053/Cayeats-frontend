@@ -30,7 +30,7 @@ const AdminFooterPages = () => {
   const [message, setMessage] = useState("");
   const [expandedFAQ, setExpandedFAQ] = useState(null);
   const [editingFAQ, setEditingFAQ] = useState(null);
-  const { invalidateCache } = useFooterPage();
+  const { invalidateCache, invalidateAllCache } = useFooterPage();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -219,14 +219,41 @@ const AdminFooterPages = () => {
 
     try {
       setSaving(true);
-      await initializeDefaultPages();
-      await loadPages();
-      // Clear entire cache after initialization
-      const { invalidateAllCache } = useFooterPage();
-      invalidateAllCache();
-      setMessage({ type: "success", text: "Default pages initialized!" });
-      setTimeout(() => setMessage(""), 3000);
+      const result = await initializeDefaultPages();
+
+      if (result.success) {
+        // Clear entire cache after initialization
+        invalidateAllCache();
+
+        // Reload pages
+        const data = await getAllFooterPages();
+        setPages(data);
+        if (data.length > 0) {
+          const fullPage = await getFooterPageBySlug(data[0].slug);
+          setSelectedPage(fullPage);
+          setFormData({
+            title: fullPage.title || "",
+            description: fullPage.description || "",
+            content: fullPage.content || "",
+            contactInfo: fullPage.contactInfo || {
+              email: "",
+              phone: "",
+              address: "",
+              hours: "",
+            },
+          });
+          setNewFAQ({ question: "", answer: "" });
+          setEditingFAQData(null);
+        }
+
+        setMessage({
+          type: "success",
+          text: "Default pages initialized successfully!",
+        });
+        setTimeout(() => setMessage(""), 3000);
+      }
     } catch (error) {
+      console.error("Initialize pages error:", error);
       setMessage({
         type: "error",
         text: "Failed to initialize pages: " + error.message,
@@ -251,9 +278,9 @@ const AdminFooterPages = () => {
         <button
           onClick={handleInitializePages}
           disabled={saving}
-          className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 text-base border-2 border-blue-700"
+          className="bg-secondary-500 text-white px-6 py-3 rounded font-semibold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-sm"
         >
-          <Plus size={20} />
+          <Plus size={18} />
           Initialize Default Pages
         </button>
       </div>
@@ -262,8 +289,8 @@ const AdminFooterPages = () => {
         <div
           className={`mb-4 p-4 rounded ${
             message.type === "success"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
+              ? "bg-success-50 text-success-800"
+              : "bg-error-50 text-error-800"
           }`}
         >
           {message.text}
@@ -282,7 +309,7 @@ const AdminFooterPages = () => {
                   onClick={() => selectPage(page)}
                   className={`w-full text-left p-3 rounded transition ${
                     selectedPage?._id === page._id
-                      ? "bg-blue-600 text-white"
+                      ? "bg-secondary-500 text-white"
                       : "bg-white hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
@@ -290,9 +317,9 @@ const AdminFooterPages = () => {
                   <div className="text-sm opacity-75">{page.slug}</div>
                   <div className="text-xs mt-1">
                     {page.isActive ? (
-                      <span className="text-green-600">Active</span>
+                      <span className="text-success-600">Active</span>
                     ) : (
-                      <span className="text-red-600">Inactive</span>
+                      <span className="text-error-600">Inactive</span>
                     )}
                   </div>
                 </button>
@@ -366,9 +393,9 @@ const AdminFooterPages = () => {
                   <button
                     onClick={handleSavePage}
                     disabled={saving}
-                    className="w-full bg-orange-500 text-white px-6 py-3 rounded font-semibold hover:bg-orange-600 active:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 text-base border-2 border-orange-600"
+                    className="w-full bg-primary-500 text-white px-6 py-3 rounded font-semibold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                   >
-                    <Save size={20} />
+                    <Save size={18} />
                     Save Changes
                   </button>
                 </div>
@@ -380,7 +407,7 @@ const AdminFooterPages = () => {
                   <h2 className="text-xl font-semibold mb-4">FAQ Management</h2>
 
                   {/* Add New FAQ */}
-                  <div className="bg-blue-50 p-4 rounded mb-6">
+                  <div className="bg-secondary-50 p-4 rounded mb-6">
                     <h3 className="font-medium mb-3">Add New FAQ</h3>
                     <div className="space-y-3">
                       <input
@@ -404,9 +431,9 @@ const AdminFooterPages = () => {
                       <button
                         onClick={handleAddFAQ}
                         disabled={saving}
-                        className="w-full bg-green-600 text-white px-6 py-3 rounded font-semibold hover:bg-green-700 active:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 text-base border-2 border-green-700"
+                        className="w-full bg-success-500 text-white px-6 py-3 rounded font-semibold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                       >
-                        <Plus size={20} />
+                        <Plus size={18} />
                         Add FAQ
                       </button>
                     </div>
@@ -470,16 +497,16 @@ const AdminFooterPages = () => {
                                       onClick={() =>
                                         handleUpdateFAQ(faq._id, editingFAQData)
                                       }
-                                      className="flex-1 bg-green-600 text-white px-4 py-2 rounded font-semibold hover:bg-green-700 active:bg-green-800 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-green-700"
+                                      className="flex-1 bg-success-500 text-white px-4 py-2 rounded font-semibold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
-                                      <Save size={18} />
+                                      <Save size={16} />
                                       Save
                                     </button>
                                     <button
                                       onClick={() => setEditingFAQData(null)}
-                                      className="flex-1 bg-gray-500 text-white px-4 py-2 rounded font-semibold hover:bg-gray-600 active:bg-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-gray-600"
+                                      className="flex-1 bg-gray-500 text-white px-4 py-2 rounded font-semibold hover:bg-gray-600 active:bg-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
-                                      <X size={18} />
+                                      <X size={16} />
                                       Cancel
                                     </button>
                                   </div>
@@ -492,16 +519,16 @@ const AdminFooterPages = () => {
                                   <div className="flex gap-2">
                                     <button
                                       onClick={() => setEditingFAQData(faq)}
-                                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-blue-700"
+                                      className="flex-1 bg-secondary-500 text-white px-4 py-2 rounded font-semibold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
-                                      <Edit2 size={18} />
+                                      <Edit2 size={16} />
                                       Edit
                                     </button>
                                     <button
                                       onClick={() => handleDeleteFAQ(faq._id)}
-                                      className="flex-1 bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700 active:bg-red-800 disabled:opacity-50 shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 border-2 border-red-700"
+                                      className="flex-1 bg-error-500 text-white px-4 py-2 rounded font-semibold hover:bg-error-600 active:bg-error-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                                     >
-                                      <Trash2 size={18} />
+                                      <Trash2 size={16} />
                                       Delete
                                     </button>
                                   </div>
@@ -612,9 +639,9 @@ const AdminFooterPages = () => {
                     <button
                       onClick={handleUpdateContact}
                       disabled={saving}
-                      className="w-full bg-orange-500 text-white px-6 py-3 rounded font-semibold hover:bg-orange-600 active:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 text-base border-2 border-orange-600"
+                      className="w-full bg-primary-500 text-white px-6 py-3 rounded font-semibold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                     >
-                      <Save size={20} />
+                      <Save size={18} />
                       Save Contact Info
                     </button>
                   </div>
