@@ -29,6 +29,10 @@ const DashboardOverview = () => {
   }, []);
 
   const handleImageUpload = async (e) => {
+    if (stats?.isApproved === false) {
+      setError("Waiting for admin approval");
+      return;
+    }
     const file = e.target.files[0];
     if (!file) return;
     setUploadingImg(true);
@@ -70,6 +74,7 @@ const DashboardOverview = () => {
 
   // ✅ support both field names from restaurant model
   const profileImage = stats?.profileImage || stats?.image || null;
+  const canEdit = stats?.isApproved !== false;
 
   return (
     <div className="p-6 space-y-6">
@@ -106,9 +111,15 @@ const DashboardOverview = () => {
         <div className="flex gap-4 items-center">
           {/* Clickable profile image */}
           <div
-            className="w-20 h-20 bg-white/20 rounded-lg overflow-hidden relative group cursor-pointer shrink-0 border-2 border-white/30"
-            onClick={() => document.getElementById("profileImageInput").click()}
-            title="Click to change photo"
+            className={`w-20 h-20 bg-white/20 rounded-lg overflow-hidden relative group shrink-0 border-2 border-white/30 ${
+              canEdit ? "cursor-pointer" : "cursor-not-allowed opacity-70"
+            }`}
+            onClick={() =>
+              canEdit && document.getElementById("profileImageInput").click()
+            }
+            title={
+              canEdit ? "Click to change photo" : "Waiting for admin approval"
+            }
           >
             {uploadingImg ? (
               <div className="w-full h-full flex items-center justify-center bg-black/40">
@@ -144,6 +155,7 @@ const DashboardOverview = () => {
             accept="image/*"
             className="hidden"
             onChange={handleImageUpload}
+            disabled={!canEdit}
           />
 
           <div>

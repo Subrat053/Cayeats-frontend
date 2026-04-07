@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, SlidersHorizontal, X } from "lucide-react";
+import Button from "../ui/Button";
 import { cuisineCategories, deliveryProviders } from "../../data/mockData";
 
 const SearchBar = ({
@@ -85,12 +86,9 @@ const SearchBar = ({
             <SlidersHorizontal className="w-4 h-4" />
           </button>
         )}
-        <button
-          type="submit"
-          className="bg-primary-500 text-white px-2 lg:px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-primary-600 transition-colors"
-        >
+        <Button type="submit" variant="primary" size="sm">
           Search
-        </button>
+        </Button>
       </form>
 
       {/* Filter Dropdown */}
@@ -197,13 +195,16 @@ const SearchBar = ({
               </div>
             </div>
 
-            <button
+            <Button
               type="button"
               onClick={handleSearch}
-              className="w-full mt-4 bg-primary-500 text-white py-2.5 rounded-lg font-bold hover:bg-primary-600 transition-colors"
+              variant="primary"
+              fullWidth
+              size="md"
+              className="mt-4"
             >
               Apply Filters
-            </button>
+            </Button>
           </div>
         </>
       )}

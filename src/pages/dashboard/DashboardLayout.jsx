@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -14,6 +14,7 @@ import {
   Bell,
   LogOut,
 } from "lucide-react";
+import { getRestaurantProfile } from "../../api/restaurantService";
 
 const NAV_ITEMS = [
   { label: "Overview", path: "/dashboard", icon: LayoutDashboard, exact: true },
@@ -38,12 +39,35 @@ const NAV_ITEMS = [
 const DashboardLayout = () => {
   const [marketingOpen, setMarketingOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [approvalStatus, setApprovalStatus] = useState({
+    loading: true,
+    isApproved: true,
+  });
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    getRestaurantProfile()
+      .then((data) => {
+        if (!isMounted) return;
+        setApprovalStatus({
+          loading: false,
+          isApproved: data?.isApproved !== false,
+        });
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setApprovalStatus({ loading: false, isApproved: true });
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -186,6 +210,12 @@ const DashboardLayout = () => {
 
         {/* Page content */}
         <main className="flex-1 p-6">
+          {!approvalStatus.loading && !approvalStatus.isApproved && (
+            <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 text-sm font-semibold uppercase">
+              ⏳ WAITING FOR ADMIN APPROVAL. YOU CAN VIEW YOUR DASHBOARD, BUT
+              UPDATES AND ACTIONS ARE DISABLED UNTIL APPROVAL.
+            </div>
+          )}
           <Outlet />
         </main>
       </div>

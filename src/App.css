@@ -1,4 +1,5 @@
-#root {
+/* Scope these ONLY to the landing page wrapper, not globally */
+.vite-root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -19,12 +20,8 @@
 }
 
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: no-preference) {

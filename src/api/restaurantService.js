@@ -127,7 +127,12 @@ export const uploadImage = async (file) => {
   const res = await api.post("/restaurant/upload", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return res.data?.url;
+  return (
+    res.data?.url ||
+    res.data?.data?.profileImage ||
+    res.data?.data?.image ||
+    null
+  );
 };
 
 // ─── Products ─────────────────────────────────────────────

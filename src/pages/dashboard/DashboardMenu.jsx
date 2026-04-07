@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api/axios"; // ✅ Import the api instance, not axios directly
+import {
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  uploadImage,
+  getRestaurantProfile,
+} from "../../api/restaurantService";
+
+const EMPTY_FORM = {
+  name: "",
+  description: "",
+  price: "",
+  category: "",
+  image: "",
+  stock: "",
+};
 
 const DashboardMenu = () => {
   const [products, setProducts] = useState([]);
@@ -8,9 +24,28 @@ const DashboardMenu = () => {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [editingId, setEditingId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [approvalStatus, setApprovalStatus] = useState({
+    loading: true,
+    isApproved: true,
+  });
 
   useEffect(() => {
     fetchProducts();
+    getRestaurantProfile()
+      .then((data) => {
+        setApprovalStatus({
+          loading: false,
+          isApproved: data?.isApproved !== false,
+        });
+      })
+      .catch(() => {
+        setApprovalStatus({ loading: false, isApproved: true });
+      });
   }, []);
 
   const fetchProducts = async () => {
@@ -41,6 +76,95 @@ const DashboardMenu = () => {
       setError(err.response?.data?.message || "Failed to load menu");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openAdd = () => {
+    if (!approvalStatus.isApproved) {
+      setError("Waiting for admin approval");
+      return;
+    }
+    setForm(EMPTY_FORM);
+    setEditingId(null);
+    setError(null);
+    setShowModal(true);
+  };
+
+  const openEdit = (product) => {
+    if (!approvalStatus.isApproved) {
+      setError("Waiting for admin approval");
+      return;
+    }
+    setForm({
+      name: product.name || "",
+      description: product.description || "",
+      price: product.price || "",
+      category: product.category || "",
+      image: product.image || "",
+      stock: product.stock ?? "",
+    });
+    setEditingId(product._id);
+    setError(null);
+    setShowModal(true);
+  };
+
+  const handleImageUpload = async (e) => {
+    if (!approvalStatus.isApproved) {
+      setError("Waiting for admin approval");
+      return;
+    }
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setError(null);
+    try {
+      const url = await uploadImage(file);
+      setForm((prev) => ({ ...prev, image: url || "" }));
+    } catch (err) {
+      setError("Image upload failed: " + err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!approvalStatus.isApproved) {
+      setError("Waiting for admin approval");
+      return;
+    }
+    if (!form.name || !form.price) {
+      setError("Name and price are required");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      if (editingId) {
+        await updateProduct(editingId, form);
+      } else {
+        await addProduct(form);
+      }
+      setShowModal(false);
+      await fetchProducts();
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!approvalStatus.isApproved) {
+      setError("Waiting for admin approval");
+      return;
+    }
+    if (!window.confirm("Delete this item?")) return;
+    try {
+      await deleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+      setFilteredProducts((prev) => prev.filter((p) => p._id !== id));
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Delete failed");
     }
   };
 
@@ -90,13 +214,26 @@ const DashboardMenu = () => {
             <h1 className="text-3xl font-bold text-gray-900">
               📋 Restaurant Menu
             </h1>
-            <button
-              onClick={fetchProducts}
-              title="Refresh menu"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-bold"
-            >
-              🔄 Refresh
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={openAdd}
+                disabled={!approvalStatus.isApproved}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 font-bold ${
+                  approvalStatus.isApproved
+                    ? "bg-orange-500 text-white hover:bg-orange-600"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                ➕ Add Item
+              </button>
+              <button
+                onClick={fetchProducts}
+                title="Refresh menu"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-bold"
+              >
+                🔄 Refresh
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -112,6 +249,11 @@ const DashboardMenu = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {!approvalStatus.loading && !approvalStatus.isApproved && (
+          <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 text-sm font-semibold uppercase">
+            ⏳ WAITING FOR ADMIN APPROVAL. MENU CHANGES ARE DISABLED.
+          </div>
+        )}
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           {/* Search Bar */}
@@ -156,6 +298,22 @@ const DashboardMenu = () => {
                 key={product._id}
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
               >
+                <div className="flex justify-end gap-2 p-3">
+                  <button
+                    onClick={() => openEdit(product)}
+                    disabled={!approvalStatus.isApproved}
+                    className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-orange-100 text-gray-700 disabled:opacity-50"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    disabled={!approvalStatus.isApproved}
+                    className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-red-100 text-gray-700 disabled:opacity-50"
+                  >
+                    Remove
+                  </button>
+                </div>
                 {/* Product Image */}
                 {product.image && (
                   <div className="h-48 w-full bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden flex items-center justify-center">
@@ -228,6 +386,116 @@ const DashboardMenu = () => {
           </div>
         )}
       </div>
+
+      {/* Add Item Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white">
+              <h2 className="text-lg font-semibold">
+                {editingId ? "Edit Menu Item" : "Add Menu Item"}
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {[
+                {
+                  label: "Item Name *",
+                  field: "name",
+                  type: "text",
+                  placeholder: "e.g. Jerk Chicken",
+                },
+                {
+                  label: "Description",
+                  field: "description",
+                  type: "text",
+                  placeholder: "Short description",
+                },
+                {
+                  label: "Price *",
+                  field: "price",
+                  type: "number",
+                  placeholder: "0.00",
+                },
+                {
+                  label: "Category",
+                  field: "category",
+                  type: "text",
+                  placeholder: "e.g. Mains, Drinks",
+                },
+                {
+                  label: "Stock",
+                  field: "stock",
+                  type: "number",
+                  placeholder: "0",
+                },
+              ].map(({ label, field, type, placeholder }) => (
+                <div key={field}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {label}
+                  </label>
+                  <input
+                    type={type}
+                    value={form[field]}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        [field]: e.target.value,
+                      }))
+                    }
+                    placeholder={placeholder}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                </div>
+              ))}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Image
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="text-sm"
+                  />
+                  {uploadingImage && (
+                    <span className="text-xs text-gray-500">Uploading...</span>
+                  )}
+                </div>
+                {form.image && (
+                  <img
+                    src={form.image}
+                    alt="Preview"
+                    className="mt-3 w-24 h-24 object-cover rounded-lg border"
+                  />
+                )}
+              </div>
+
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save Item"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

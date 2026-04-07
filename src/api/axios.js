@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const resolveApiBaseUrl = () => {
-  const configured = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const configured =
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   // Prevent mixed content: if app is served over HTTPS, never call an HTTP API.
   if (
@@ -38,5 +39,19 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message;
+    if (status === 403 && message === "Waiting for admin approval") {
+      return Promise.reject(
+        new Error("Without approval you cant update anything"),
+      );
+    }
+    return Promise.reject(error);
+  },
+);
 
 export default api;

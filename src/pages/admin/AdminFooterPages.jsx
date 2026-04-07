@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import Button from "../../components/ui/Button";
 import {
   getAllFooterPages,
   getFooterPageBySlug,
@@ -274,15 +275,19 @@ const AdminFooterPages = () => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl lg:text-3xl font-bold">Footer Page Management</h1>
-        <button
+        <h1 className="text-xl lg:text-3xl font-bold">
+          Footer Page Management
+        </h1>
+        <Button
           onClick={handleInitializePages}
           disabled={saving}
-          className="bg-secondary-500 text-white px-6 py-3 rounded font-bold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-xs lg:text-sm"
+          variant="primary"
+          size="sm"
+          className="text-xs lg:text-sm"
         >
           <Plus size={18} />
           Initialize Default Pages
-        </button>
+        </Button>
       </div>
 
       {message && (
@@ -309,17 +314,49 @@ const AdminFooterPages = () => {
                   onClick={() => selectPage(page)}
                   className={`w-full text-left p-3 rounded transition ${
                     selectedPage?._id === page._id
-                      ? "bg-secondary-500 text-white"
+                      ? "bg-primary-500 text-white shadow-sm"
                       : "bg-white hover:bg-gray-100 border border-gray-200"
                   }`}
                 >
-                  <div className="font-medium">{page.title}</div>
-                  <div className="text-sm opacity-75">{page.slug}</div>
+                  <div
+                    className={`font-semibold ${
+                      selectedPage?._id === page._id
+                        ? "text-white"
+                        : "text-gray-900"
+                    }`}
+                  >
+                    {page.title}
+                  </div>
+                  <div
+                    className={`text-sm ${
+                      selectedPage?._id === page._id
+                        ? "text-orange-100"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {page.slug}
+                  </div>
                   <div className="text-xs mt-1">
                     {page.isActive ? (
-                      <span className="text-success-600">Active</span>
+                      <span
+                        className={
+                          selectedPage?._id === page._id
+                            ? "text-white"
+                            : "text-emerald-600"
+                        }
+                      >
+                        Active
+                      </span>
                     ) : (
-                      <span className="text-error-600">Inactive</span>
+                      <span
+                        className={
+                          selectedPage?._id === page._id
+                            ? "text-white"
+                            : "text-red-600"
+                        }
+                      >
+                        Inactive
+                      </span>
                     )}
                   </div>
                 </button>
@@ -476,14 +513,17 @@ Use these formatting options for professional looking pages."
                       </div>
                     )}
 
-                  <button
+                  <Button
                     onClick={handleSavePage}
                     disabled={saving}
-                    className="w-full bg-primary-500 text-white px-6 py-3 rounded font-bold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                    variant="primary"
+                    fullWidth
+                    size="md"
+                    className="text-sm"
                   >
                     <Save size={18} />
                     Save Changes
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -514,14 +554,17 @@ Use these formatting options for professional looking pages."
                         rows={3}
                         className="w-full px-3 py-2 border border-gray-300 rounded"
                       />
-                      <button
+                      <Button
                         onClick={handleAddFAQ}
                         disabled={saving}
-                        className="w-full bg-success-500 text-white px-6 py-3 rounded font-bold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                        variant="primary"
+                        fullWidth
+                        size="md"
+                        className="text-sm"
                       >
                         <Plus size={18} />
                         Add FAQ
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
@@ -579,22 +622,26 @@ Use these formatting options for professional looking pages."
                                     className="w-full px-3 py-2 border border-gray-300 rounded"
                                   />
                                   <div className="flex gap-2">
-                                    <button
+                                    <Button
                                       onClick={() =>
                                         handleUpdateFAQ(faq._id, editingFAQData)
                                       }
-                                      className="flex-1 bg-success-500 text-white px-4 py-2 rounded font-bold hover:bg-success-600 active:bg-success-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      variant="primary"
+                                      size="sm"
+                                      className="flex-1 text-sm"
                                     >
                                       <Save size={16} />
                                       Save
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
                                       onClick={() => setEditingFAQData(null)}
-                                      className="flex-1 bg-gray-500 text-white px-4 py-2 rounded font-bold hover:bg-gray-600 active:bg-gray-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      variant="gray"
+                                      size="sm"
+                                      className="flex-1 text-sm"
                                     >
                                       <X size={16} />
                                       Cancel
-                                    </button>
+                                    </Button>
                                   </div>
                                 </div>
                               ) : (
@@ -603,20 +650,24 @@ Use these formatting options for professional looking pages."
                                     {faq.answer}
                                   </p>
                                   <div className="flex gap-2">
-                                    <button
+                                    <Button
                                       onClick={() => setEditingFAQData(faq)}
-                                      className="flex-1 bg-secondary-500 text-white px-4 py-2 rounded font-bold hover:bg-secondary-600 active:bg-secondary-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      variant="primary"
+                                      size="sm"
+                                      className="flex-1 text-sm"
                                     >
                                       <Edit2 size={16} />
                                       Edit
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
                                       onClick={() => handleDeleteFAQ(faq._id)}
-                                      className="flex-1 bg-error-500 text-white px-4 py-2 rounded font-bold hover:bg-error-600 active:bg-error-700 disabled:opacity-50 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                                      variant="error"
+                                      size="sm"
+                                      className="flex-1 text-sm"
                                     >
                                       <Trash2 size={16} />
                                       Delete
-                                    </button>
+                                    </Button>
                                   </div>
                                 </div>
                               )}
@@ -722,14 +773,17 @@ Use these formatting options for professional looking pages."
                       />
                     </div>
 
-                    <button
+                    <Button
                       onClick={handleUpdateContact}
                       disabled={saving}
-                      className="w-full bg-primary-500 text-white px-6 py-3 rounded font-bold hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                      variant="primary"
+                      fullWidth
+                      size="md"
+                      className="text-sm"
                     >
                       <Save size={18} />
                       Save Contact Info
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

@@ -65,6 +65,21 @@ export const getAllUsers = async () => {
   return res.data?.data;
 };
 
+export const deleteUser = async (userId) => {
+  const res = await api.delete(`/admin/users/${userId}`);
+  return res.data;
+};
+
+export const deactivateUser = async (userId) => {
+  const res = await api.put(`/admin/users/${userId}/deactivate`);
+  return res.data;
+};
+
+export const activateUser = async (userId) => {
+  const res = await api.put(`/admin/users/${userId}/activate`);
+  return res.data;
+};
+
 export const getAdminAnalytics = async () => {
   const res = await api.get("/admin/analytics");
   return res.data?.data;

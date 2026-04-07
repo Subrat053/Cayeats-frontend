@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Button from "../components/ui/Button";
 import {
   Heart,
   Settings,
@@ -189,9 +190,9 @@ const UserProfilePage = () => {
                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none"
                   />
                 </div>
-                <button className="px-5 py-2.5 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors">
+                <Button variant="primary" size="md">
                   Save Changes
-                </button>
+                </Button>
               </div>
             </div>
 

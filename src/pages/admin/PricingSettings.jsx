@@ -16,6 +16,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { getAdminSettings, updateAdminSettings } from "../../api/adminService";
+import Button from "../../components/ui/Button";
 
 const PricingSettings = () => {
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,11 @@ const PricingSettings = () => {
   const [success, setSuccess] = useState(null);
 
   // ── State ──────────────────────────────────────────────
-  const [firstYearDiscount, setFirstYearDiscount] = useState(50);
+  const [yearlyDiscounts, setYearlyDiscounts] = useState({
+    year1: 50,
+    year2: 25,
+    year3: 25,
+  });
 
   const [claimPricing, setClaimPricing] = useState({
     semiAnnual: 160,
@@ -81,8 +86,7 @@ const PricingSettings = () => {
     getAdminSettings()
       .then((data) => {
         if (!data) return;
-        if (data.firstYearDiscount !== undefined)
-          setFirstYearDiscount(data.firstYearDiscount);
+        if (data.yearlyDiscounts) setYearlyDiscounts(data.yearlyDiscounts);
         if (data.claimPricing) setClaimPricing(data.claimPricing);
         if (data.productPlans) setProductPlans(data.productPlans);
         if (data.adPricing)
@@ -111,8 +115,8 @@ const PricingSettings = () => {
   // ── Helpers ────────────────────────────────────────────
   const calcSemiAnnual = (monthly) => Math.round(monthly * 6 * 0.95);
   const calcAnnual = (monthly) => Math.round(monthly * 12 * 0.9);
-  const applyDiscount = (price) =>
-    Math.round(price * (1 - firstYearDiscount / 100));
+  const applyDiscount = (price, year = "year1") =>
+    Math.round(price * (1 - yearlyDiscounts[year] / 100));
 
   // ── Save ───────────────────────────────────────────────
   const handleSave = async () => {
@@ -130,7 +134,7 @@ const PricingSettings = () => {
       });
 
       await updateAdminSettings({
-        firstYearDiscount,
+        yearlyDiscounts,
         claimPricing,
         productPlans,
         adPricing: cleanAd,
@@ -225,14 +229,11 @@ const PricingSettings = () => {
             Configure all subscription, advertising, and product plan rates
           </p>
         </div>
-        <button
+        <Button
           onClick={handleSave}
           disabled={!hasChanges || saving}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors ${
-            hasChanges && !saving
-              ? "bg-orange-500 text-white hover:bg-orange-600"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-          }`}
+          variant="primary"
+          size="md"
         >
           {saving ? (
             <>
@@ -243,7 +244,7 @@ const PricingSettings = () => {
               <Save className="w-4 h-4" /> Save All Changes
             </>
           )}
-        </button>
+        </Button>
       </div>
 
       {error && (
@@ -259,7 +260,7 @@ const PricingSettings = () => {
         </div>
       )}
 
-      {/* ── 🎉 First Year Discount ── */}
+      {/* ── 🎉 Yearly Subscription Discounts ── */}
       <section className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border-2 border-green-200 overflow-hidden">
         <div className="p-6 border-b border-green-200">
           <div className="flex items-center gap-3">
@@ -268,76 +269,102 @@ const PricingSettings = () => {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
-                First Year Discount
+                Yearly Subscription Discounts
               </h2>
               <p className="text-sm text-gray-600">
-                Applied automatically to all new restaurant subscriptions in
-                year 1
+                Control discount percentages for Year 1, Year 2, and Year 3 of
+                all new subscriptions
               </p>
             </div>
           </div>
         </div>
-        <div className="p-6 flex flex-col sm:flex-row items-center gap-6">
-          <div className="flex items-center gap-3">
-            <input
-              type="number"
-              min="0"
-              max="100"
-              value={firstYearDiscount}
-              onChange={(e) => {
-                setFirstYearDiscount(parseFloat(e.target.value) || 0);
-                mark();
-              }}
-              className="text-5xl font-bold text-green-700 bg-transparent border-b-2 border-green-300 focus:border-green-600 focus:outline-none w-24 text-center"
-            />
-            <span className="text-4xl font-bold text-green-600">%</span>
-            <span className="text-gray-600 font-medium">
-              OFF
-              <br />
-              first year
-            </span>
-          </div>
-          <div className="flex-1 bg-white rounded-xl p-4 border border-green-200">
-            <p className="text-sm font-medium text-gray-700 mb-3">
-              Preview — What new restaurants pay in Year 1:
+        <div className="p-6 grid md:grid-cols-3 gap-4">
+          {[
+            { key: "year1", label: "Year 1", color: "green" },
+            { key: "year2", label: "Year 2", color: "blue" },
+            { key: "year3", label: "Year 3", color: "purple" },
+          ].map(({ key, label, color }) => {
+            const bgMap = {
+              green:
+                "bg-gradient-to-b from-green-100 to-green-50 border-green-300",
+              blue: "bg-gradient-to-b from-blue-100 to-blue-50 border-blue-300",
+              purple:
+                "bg-gradient-to-b from-purple-100 to-purple-50 border-purple-300",
+            };
+            const colorMap = {
+              green: "text-green-700",
+              blue: "text-blue-700",
+              purple: "text-purple-700",
+            };
+
+            return (
+              <div
+                key={key}
+                className={`rounded-xl border-2 p-6 ${bgMap[color]}`}
+              >
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  {label}
+                </h3>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={yearlyDiscounts[key]}
+                    onChange={(e) => {
+                      setYearlyDiscounts({
+                        ...yearlyDiscounts,
+                        [key]: parseFloat(e.target.value) || 0,
+                      });
+                      mark();
+                    }}
+                    className={`text-4xl font-bold ${colorMap[color]} bg-transparent border-b-2 border-${color}-300 focus:border-${color}-600 focus:outline-none w-20 text-center`}
+                  />
+                  <span className={`text-3xl font-bold ${colorMap[color]}`}>
+                    %
+                  </span>
+                </div>
+                <p className={`text-center font-semibold ${colorMap[color]}`}>
+                  OFF
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Preview */}
+        <div className="px-6 pb-6">
+          <div className="bg-white rounded-xl p-5 border border-green-200">
+            <p className="text-sm font-semibold text-gray-700 mb-4">
+              💡 Preview — Price Examples Across Years:
             </p>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Semi-Annual claim:</span>
-                <span className="font-bold text-green-700">
-                  ${applyDiscount(claimPricing.semiAnnual)}{" "}
-                  <span className="line-through text-gray-400 font-normal">
-                    ${claimPricing.semiAnnual}
-                  </span>
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Annual claim:</span>
-                <span className="font-bold text-green-700">
-                  ${applyDiscount(claimPricing.annual)}{" "}
-                  <span className="line-through text-gray-400 font-normal">
-                    ${claimPricing.annual}
-                  </span>
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Basic semi-annual:</span>
-                <span className="font-bold text-green-700">
-                  ${applyDiscount(productPlans.basic.semiAnnual)}{" "}
-                  <span className="line-through text-gray-400 font-normal">
-                    ${productPlans.basic.semiAnnual}
-                  </span>
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Professional annual:</span>
-                <span className="font-bold text-green-700">
-                  ${applyDiscount(productPlans.professional.annual)}{" "}
-                  <span className="line-through text-gray-400 font-normal">
-                    ${productPlans.professional.annual}
-                  </span>
-                </span>
-              </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              {["year1", "year2", "year3"].map((year) => (
+                <div key={year} className="space-y-2">
+                  <h4 className="text-sm font-bold text-gray-900 capitalize">
+                    {year === "year1"
+                      ? "Year 1"
+                      : year === "year2"
+                        ? "Year 2"
+                        : "Year 3"}{" "}
+                    ({yearlyDiscounts[year]}% off)
+                  </h4>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span className="text-gray-600">Semi-Annual Claim:</span>
+                      <span className="font-bold text-gray-900">
+                        ${applyDiscount(claimPricing.semiAnnual, year)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-gray-50 rounded">
+                      <span className="text-gray-600">Annual Claim:</span>
+                      <span className="font-bold text-gray-900">
+                        ${applyDiscount(claimPricing.annual, year)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -384,13 +411,25 @@ const PricingSettings = () => {
                 onChange={(v) => setClaimPricing({ ...claimPricing, [key]: v })}
               />
               <p className="text-gray-500 text-sm mt-1">{period}</p>
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-xs text-green-700 font-medium">
-                  Year 1 price (with {firstYearDiscount}% off):
-                </p>
-                <p className="text-2xl font-bold text-green-700">
-                  ${applyDiscount(claimPricing[key])}
-                </p>
+              <div className="mt-4 space-y-2">
+                {["year1", "year2", "year3"].map((year) => (
+                  <div
+                    key={year}
+                    className="p-2 bg-gray-50 rounded-lg border border-gray-200"
+                  >
+                    <p className="text-xs text-gray-600 font-medium">
+                      {year === "year1"
+                        ? "Year 1"
+                        : year === "year2"
+                          ? "Year 2"
+                          : "Year 3"}{" "}
+                      ({yearlyDiscounts[year]}% off):
+                    </p>
+                    <p className="text-lg font-bold text-gray-900">
+                      ${applyDiscount(claimPricing[key], year)}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
@@ -707,8 +746,9 @@ const PricingSettings = () => {
           <h3 className="font-semibold text-blue-900 mb-2">Pricing Rules</h3>
           <ul className="text-sm text-blue-700 space-y-1">
             <li>
-              • <strong>First Year Discount</strong> applies to all new
-              restaurant subscriptions automatically.
+              • <strong>Yearly Discounts</strong> apply to subscription prices
+              for Year 1, Year 2, and Year 3 respectively. Full admin control
+              over each year's discount percentage.
             </li>
             <li>
               • <strong>Claim & Product Plans:</strong> Semi-Annual & Annual

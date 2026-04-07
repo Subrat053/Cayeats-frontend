@@ -17,6 +17,7 @@ import {
   getSubscriptionDetails,
   toggleAutoRenew,
 } from "../../api/restaurantService";
+import Button from "../../components/ui/Button";
 
 const PLAN_ICONS = { Silver: Star, Gold: Zap, Platinum: Crown };
 const PLAN_COLORS = {
@@ -49,9 +50,47 @@ const DashboardSubscription = () => {
   const [success, setSuccess] = useState(null);
   const [isFirstYear, setIsFirstYear] = useState(false);
   const [discount, setDiscount] = useState(0);
+  const [yearlyDiscounts, setYearlyDiscounts] = useState({
+    year1: 50,
+    year2: 25,
+    year3: 25,
+  });
+  const [currentYear, setCurrentYear] = useState("year1");
+  const [basePricing, setBasePricing] = useState({
+    semiAnnual: 160,
+    annual: 240,
+  });
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  const loadPricing = async () => {
+    try {
+      const [pricingData, subData] = await Promise.all([
+        getSubscriptionPricing(),
+        getSubscriptionDetails(),
+      ]);
+      setPlans(pricingData?.plans || []);
+      setIsFirstYear(pricingData?.isFirstYear || false);
+      setDiscount(pricingData?.discount || 0);
+      setYearlyDiscounts(
+        pricingData?.yearlyDiscounts || {
+          year1: 50,
+          year2: 25,
+          year3: 25,
+        },
+      );
+      setCurrentYear(pricingData?.currentYear || "year1");
+      setBasePricing(
+        pricingData?.basePricing || { semiAnnual: 160, annual: 240 },
+      );
+      setCurrent(subData);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   useEffect(() => {
     // Handle Stripe redirect
@@ -64,15 +103,7 @@ const DashboardSubscription = () => {
       setError("Payment cancelled. No charge was made.");
     }
 
-    Promise.all([getSubscriptionPricing(), getSubscriptionDetails()])
-      .then(([pricingData, subData]) => {
-        setPlans(pricingData?.plans || []);
-        setIsFirstYear(pricingData?.isFirstYear || false);
-        setDiscount(pricingData?.discount || 0);
-        setCurrent(subData);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    loadPricing().finally(() => setLoading(false));
   }, []);
 
   const handleCheckout = async (planId) => {
@@ -118,6 +149,36 @@ const DashboardSubscription = () => {
         <p className="text-gray-500 mt-1">
           Choose the plan that works best for your restaurant
         </p>
+      </div>
+
+      {/* Pricing Details */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3">
+        <div className="flex-1">
+          <p className="text-sm text-blue-900">
+            <strong>Current Year Discount:</strong>{" "}
+            {currentYear.charAt(0).toUpperCase() + currentYear.slice(1)} (
+            {discount}% off)
+            <br />
+            <strong>Base Prices:</strong> Semi-Annual: ${basePricing.semiAnnual}{" "}
+            | Annual: ${basePricing.annual}
+          </p>
+        </div>
+        <Button
+          onClick={async () => {
+            setRefreshing(true);
+            await loadPricing();
+            setRefreshing(false);
+          }}
+          disabled={refreshing || loading}
+          variant="secondary"
+          size="sm"
+          className="whitespace-nowrap"
+        >
+          <RefreshCw
+            className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
+          />
+          Refresh Pricing
+        </Button>
       </div>
 
       {error && (
@@ -211,11 +272,17 @@ const DashboardSubscription = () => {
             <div className="text-3xl">🎉</div>
             <div>
               <h3 className="font-bold text-lg">
-                First Year Discount — {discount}% OFF!
+                Year 1 Discount — {yearlyDiscounts.year1}% OFF!
               </h3>
               <p className="text-green-100 text-sm">
                 This special pricing applies to your first subscription. Prices
                 shown below include your discount.
+                {yearlyDiscounts.year2 > 0 && (
+                  <>
+                    <br />
+                    💡 Year 2 & 3 will be {yearlyDiscounts.year2}% off
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -314,14 +381,20 @@ const DashboardSubscription = () => {
                 ))}
               </ul>
 
-              <button
+              <Button
                 onClick={() => handleCheckout(plan.id)}
                 disabled={!!checkingOut || isCurrent}
-                className={`w-full py-3 rounded-lg text-white font-semibold transition-colors flex items-center justify-center gap-2 ${
+                variant={
                   isCurrent
-                    ? "bg-green-500 cursor-default"
-                    : colors.btn + " disabled:opacity-60"
-                }`}
+                    ? "success"
+                    : plan.id === "Silver"
+                      ? "gray"
+                      : plan.id === "Gold"
+                        ? "primary"
+                        : "secondary"
+                }
+                fullWidth
+                size="md"
               >
                 {checkingOut === plan.id ? (
                   <>
@@ -335,7 +408,7 @@ const DashboardSubscription = () => {
                 ) : (
                   `Subscribe — $${plan.finalPrice}`
                 )}
-              </button>
+              </Button>
             </div>
           );
         })}

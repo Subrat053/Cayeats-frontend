@@ -10,6 +10,7 @@ import {
 import { submitContact, getFooterPage } from "../api/browseServices";
 import { useFooterPage } from "../context/FooterPageContext";
 import MarkdownRenderer from "../components/ui/MarkdownRenderer";
+import Button from "../components/ui/Button";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -221,13 +222,16 @@ const ContactPage = () => {
               </div>
 
               {/* Submit Button */}
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white font-bold text-base rounded-lg transition-colors duration-300 uppercase tracking-widest shadow-lg hover:shadow-xl"
+                variant="primary"
+                fullWidth
+                size="lg"
+                className="uppercase tracking-widest"
               >
                 {loading ? "Sending..." : "Send Message"}
-              </button>
+              </Button>
             </form>
           </div>
         </div>
