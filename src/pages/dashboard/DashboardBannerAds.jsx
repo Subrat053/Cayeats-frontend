@@ -16,6 +16,7 @@ import {
   getBannerAdStatus,
   purchaseBannerAd,
 } from "../../api/restaurantService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const ZONES = [
   {
@@ -53,6 +54,7 @@ const DURATIONS = [
 ];
 
 const DashboardBannerAds = () => {
+  const { currencySymbol, currency } = useCurrency();
   const [pricing, setPricing] = useState(null);
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -259,7 +261,7 @@ const DashboardBannerAds = () => {
                 </span>
                 {pricing && (
                   <p className="text-sm font-semibold text-orange-500 mt-1">
-                    from ${pricing.bannerAds[zone.id]?.monthly}/mo
+                    from {currencySymbol}{pricing.bannerAds[zone.id]?.monthly}/mo
                   </p>
                 )}
               </div>
@@ -305,7 +307,7 @@ const DashboardBannerAds = () => {
                     </div>
                     {pricing && (
                       <p className="font-bold text-orange-500">
-                        ${getPrice(zone.id, formData.duration)}/mo
+                        {currencySymbol}{getPrice(zone.id, formData.duration)}/mo
                       </p>
                     )}
                   </div>
@@ -423,7 +425,7 @@ const DashboardBannerAds = () => {
                   >
                     <p className="font-medium text-gray-900">{d.name}</p>
                     <p className="text-xl font-bold text-orange-500">
-                      ${getPrice(formData.zone, d.id)}
+                      {currencySymbol}{getPrice(formData.zone, d.id)}
                     </p>
                     {d.savings && (
                       <p className="text-xs text-green-600">{d.savings}</p>
@@ -446,7 +448,7 @@ const DashboardBannerAds = () => {
                 <div className="flex justify-between border-t pt-2">
                   <span className="font-semibold">Total</span>
                   <span className="text-xl font-bold text-orange-500">
-                    ${getPrice(formData.zone, formData.duration)} USD
+                    {currencySymbol}{getPrice(formData.zone, formData.duration)} {currency}
                   </span>
                 </div>
               </div>

@@ -11,6 +11,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { getOrders, updateOrderStatus } from "../../api/restaurantService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const STATUS_CONFIG = {
   Pending: {
@@ -47,6 +48,7 @@ const NEXT_STATUS = {
 };
 
 const DashboardOrders = () => {
+  const { currencySymbol } = useCurrency();
   const [orders, setOrders] = useState([]);
   const [stats, setStats] = useState({
     today: 0,
@@ -160,7 +162,7 @@ const DashboardOrders = () => {
           },
           {
             label: "Revenue",
-            value: `$${stats.totalRevenue?.toFixed(2)}`,
+            value: `${currencySymbol}${stats.totalRevenue?.toFixed(2)}`,
             icon: Truck,
             bg: "bg-purple-100",
             color: "text-purple-600",
@@ -294,7 +296,7 @@ const DashboardOrders = () => {
                         )}
                       </div>
                       <p className="text-sm text-gray-500 truncate">
-                        {order.customerName} · ${order.totalAmount?.toFixed(2)}{" "}
+                        {order.customerName} · {currencySymbol}{order.totalAmount?.toFixed(2)}{" "}
                         · {order.items?.length} item
                         {order.items?.length !== 1 ? "s" : ""}
                       </p>
@@ -352,13 +354,13 @@ const DashboardOrders = () => {
                                 {item.quantity}× {item.name}
                               </span>
                               <span className="font-medium">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                {currencySymbol}{(item.price * item.quantity).toFixed(2)}
                               </span>
                             </div>
                           ))}
                           <div className="border-t border-gray-100 pt-1.5 flex justify-between font-semibold text-sm">
                             <span>Total</span>
-                            <span>${order.totalAmount?.toFixed(2)}</span>
+                            <span>{currencySymbol}{order.totalAmount?.toFixed(2)}</span>
                           </div>
                         </div>
                       </div>

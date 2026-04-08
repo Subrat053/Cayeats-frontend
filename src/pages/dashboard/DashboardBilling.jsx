@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { getBillingHistory } from "../../api/restaurantService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const STATUS_CONFIG = {
   completed: { color: "text-green-600 bg-green-50", icon: CheckCircle },
@@ -19,6 +20,7 @@ const STATUS_CONFIG = {
 };
 
 const DashboardBilling = () => {
+  const { currencySymbol } = useCurrency();
   const [billing, setBilling] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,7 +86,7 @@ const DashboardBilling = () => {
           <div>
             <p className="text-sm text-gray-500">Total Spent</p>
             <p className="text-2xl font-bold text-gray-900">
-              ${totalSpent.toFixed(2)}
+              {currencySymbol}{totalSpent.toFixed(2)}
             </p>
             <p className="text-xs text-gray-500 mt-1">All time</p>
           </div>
@@ -96,7 +98,7 @@ const DashboardBilling = () => {
           <div>
             <p className="text-sm text-gray-500">Pending</p>
             <p className="text-2xl font-bold text-gray-900">
-              ${pendingAmount.toFixed(2)}
+              {currencySymbol}{pendingAmount.toFixed(2)}
             </p>
             <p className="text-xs text-gray-500 mt-1">Processing</p>
           </div>
@@ -197,7 +199,7 @@ const DashboardBilling = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="font-bold text-gray-900">
-                          ${txn.amount?.toFixed(2)}
+                          {currencySymbol}{txn.amount?.toFixed(2)}
                         </p>
                         <span
                           className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full mt-1 ${config.color}`}
@@ -256,7 +258,7 @@ const DashboardBilling = () => {
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-gray-900">
-                          ${service.amount?.toFixed(2)}
+                          {currencySymbol}{service.amount?.toFixed(2)}
                         </p>
                         <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
                           Active

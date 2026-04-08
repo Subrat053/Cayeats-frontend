@@ -19,7 +19,15 @@ import { getRestaurantProfile } from "../../api/restaurantService";
 const NAV_ITEMS = [
   { label: "Overview", path: "/dashboard", icon: LayoutDashboard, exact: true },
   { label: "My Restaurant", path: "/dashboard/profile", icon: UtensilsCrossed },
-  { label: "Menu", path: "/dashboard/menu", icon: ShoppingBag },
+  {
+    label: "Menu Management",
+    icon: ShoppingBag,
+    children: [
+      { label: "Menu Items", path: "/dashboard/menu" },
+      { label: "Categories", path: "/dashboard/categories" },
+      { label: "Category Analytics", path: "/dashboard/categories/analytics" },
+    ],
+  },
   { label: "Analytics", path: "/dashboard/analytics", icon: BarChart2 },
   {
     label: "Marketing",
@@ -46,7 +54,17 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    // Save currency before clearing localStorage (it's a global platform setting, not user-specific)
+    const savedCurrency = localStorage.getItem("platformCurrency");
+
+    // Clear all localStorage items
     localStorage.clear();
+
+    // Restore currency after clearing
+    if (savedCurrency) {
+      localStorage.setItem("platformCurrency", savedCurrency);
+    }
+
     navigate("/login");
   };
 

@@ -1,6 +1,7 @@
 import AdminLayout from "./AdminLayout";
 import AdminDashboard from "./AdminDashboard";
 import AdminSettings from "./AdminSettings";
+import AdminCurrencySettings from "./AdminCurrencySettings";
 import ManageRestaurants from "./ManageRestaurants";
 import ManageDeliveryProviders from "./ManageDeliveryProviders";
 import ManageBanners from "./ManageBanners";
@@ -20,6 +21,7 @@ export {
   AdminLayout,
   AdminDashboard,
   AdminSettings,
+  AdminCurrencySettings,
   ManageRestaurants,
   ManageDeliveryProviders,
   ManageBanners,

@@ -14,8 +14,10 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { claimPricing } from '../data/mockData';
 import { formatCurrency } from '../utils/helpers';
+import { useCurrency } from '../context/CurrencyContext';
 
 const PartnerPage = () => {
+  const { currencySymbol, currency } = useCurrency();
   const restaurantBenefits = [
     'Get verified badge on your listing',
     'Manage your restaurant profile',
@@ -150,9 +152,9 @@ const PartnerPage = () => {
                 </h3>
                 <div className="mb-4">
                   <span className="text-4xl font-bold text-gray-900">
-                    {formatCurrency(claimPricing.sixMonths.price)}
+                    {currencySymbol}{claimPricing.sixMonths.price}
                   </span>
-                  <span className="text-gray-500"> USD</span>
+                  <span className="text-gray-500"> {currency}</span>
                 </div>
                 <p className="text-gray-600 mb-6">Perfect for trying out the platform</p>
                 <Link to="/register?type=restaurant">
@@ -173,11 +175,11 @@ const PartnerPage = () => {
                 </h3>
                 <div className="mb-4">
                   <span className="text-4xl font-bold text-gray-900">
-                    {formatCurrency(claimPricing.oneYear.price)}
+                    {currencySymbol}{claimPricing.oneYear.price}
                   </span>
-                  <span className="text-gray-500"> USD</span>
+                  <span className="text-gray-500"> {currency}</span>
                 </div>
-                <p className="text-gray-600 mb-6">Save $80 compared to 6-month plan</p>
+                <p className="text-gray-600 mb-6">Save {currencySymbol}80 compared to 6-month plan</p>
                 <Link to="/register?type=restaurant">
                   <Button className="w-full">Choose Plan</Button>
                 </Link>

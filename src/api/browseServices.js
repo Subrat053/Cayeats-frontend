@@ -16,6 +16,15 @@ export const fetchRestaurantById = async (id) => {
   return res.data?.data;
 };
 
+export const fetchRestaurantMenu = async (restaurantId, searchTerm = "") => {
+  const params = new URLSearchParams();
+  if (searchTerm) params.append("searchTerm", searchTerm);
+  const res = await api.get(
+    `/browse/restaurants/${restaurantId}/menu?${params.toString()}`,
+  );
+  return res.data?.data;
+};
+
 export const fetchCuisineCategories = async () => {
   const res = await api.get("/browse/categories");
   return res.data?.data || [];

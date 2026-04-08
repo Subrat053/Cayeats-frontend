@@ -17,6 +17,7 @@ import {
   getSubscriptionDetails,
   toggleAutoRenew,
 } from "../../api/restaurantService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const PLANS = [
   {
@@ -126,6 +127,7 @@ const VerifiedBadge = ({ plan }) => {
 };
 
 const DashboardClaimSubscription = () => {
+  const { currencySymbol, currency } = useCurrency();
   const [sub, setSub] = useState(null);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
@@ -351,7 +353,7 @@ const DashboardClaimSubscription = () => {
                 Claim Your Restaurant
               </h2>
               <p className="text-blue-700 text-sm mt-1">
-                Get verified and unlock all features. Starting from $160.
+                Get verified and unlock all features. Starting from {currencySymbol}160.
               </p>
             </div>
           </div>
@@ -420,9 +422,9 @@ const DashboardClaimSubscription = () => {
 
                   <div className="mb-4">
                     <span className="text-3xl font-bold text-gray-900">
-                      ${plan.price}
+                      {currencySymbol}{plan.price}
                     </span>
-                    <span className="text-gray-500 text-sm"> USD</span>
+                    <span className="text-gray-500 text-sm"> {currency}</span>
                   </div>
 
                   <ul className="space-y-2 mb-5">

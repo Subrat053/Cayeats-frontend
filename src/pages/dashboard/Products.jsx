@@ -7,6 +7,7 @@ import {
   uploadImage,
 } from "../../api/restaurantService";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const EMPTY_FORM = {
   name: "",
@@ -18,6 +19,7 @@ const EMPTY_FORM = {
 };
 
 const Products = () => {
+  const { currencySymbol } = useCurrency();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -177,7 +179,8 @@ const Products = () => {
                   {p.category || "Uncategorized"}
                 </p>
                 <p className="text-orange-500 font-bold mt-1">
-                  ${Number(p.price).toFixed(2)}
+                  {currencySymbol}
+                  {Number(p.price).toFixed(2)}
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Stock: {p.stock ?? 0}

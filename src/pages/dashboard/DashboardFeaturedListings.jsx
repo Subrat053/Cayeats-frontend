@@ -14,8 +14,10 @@ import {
   purchaseFeaturedListing,
   cancelFeaturedListing,
 } from "../../api/restaurantService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const DashboardFeaturedListings = () => {
+  const { currencySymbol, currency } = useCurrency();
   const [pricing, setPricing] = useState(null);
   const [listings, setListings] = useState([]); // ✅ array now
   const [selectedDuration, setDuration] = useState("30days");
@@ -295,9 +297,9 @@ const DashboardFeaturedListings = () => {
                 <h3 className="font-semibold text-gray-900">{plan.name}</h3>
                 <div className="mt-2">
                   <span className="text-2xl font-bold text-gray-900">
-                    ${plan.price}
+                    {currencySymbol}{plan.price}
                   </span>
-                  <span className="text-gray-500"> USD</span>
+                  <span className="text-gray-500"> {currency}</span>
                 </div>
               </div>
             ))}
@@ -317,7 +319,7 @@ const DashboardFeaturedListings = () => {
                 <div className="border-t pt-3 flex justify-between">
                   <span className="font-semibold">Total</span>
                   <span className="text-2xl font-bold text-orange-500">
-                    ${selectedPlan.price} USD
+                    {currencySymbol}{selectedPlan.price} {currency}
                   </span>
                 </div>
               </div>

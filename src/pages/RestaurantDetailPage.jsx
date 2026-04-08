@@ -14,7 +14,9 @@ import {
   Navigation,
 } from "lucide-react";
 import { fetchRestaurantById } from "../api/browseServices";
+import { useCurrency } from "../context/CurrencyContext";
 import { DeliveryButtons } from "../components/restaurant/index";
+import RestaurantMenu from "../components/restaurant/RestaurantMenu";
 
 // ✅ check open status from structured openingHours
 const getOpenStatus = (openingHours) => {
@@ -41,13 +43,26 @@ const RestaurantDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [liked, setLiked] = useState(false);
+  const { refreshCurrency } = useCurrency();
 
   useEffect(() => {
     if (!slug) return;
-    fetchRestaurantById(slug)
-      .then(setRestaurant)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+
+    const loadRestaurantData = async () => {
+      try {
+        // Verify currency is latest from server (non-blocking)
+        refreshCurrency();
+        // Load restaurant details
+        const data = await fetchRestaurantById(slug);
+        setRestaurant(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRestaurantData();
   }, [slug]);
 
   if (loading)
@@ -120,7 +135,7 @@ const RestaurantDetailPage = () => {
           alt={fullName}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
 
         {/* Back Button */}
         <button
@@ -213,7 +228,7 @@ const RestaurantDetailPage = () => {
                 </div>
 
                 {/* Rating */}
-                <div className="text-center bg-gray-50 rounded-xl p-4 flex-shrink-0">
+                <div className="text-center bg-gray-50 rounded-xl p-4 shrink-0">
                   <div className="flex items-center gap-1 justify-center">
                     <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                     <span className="text-2xl font-bold text-gray-900">
@@ -287,7 +302,7 @@ const RestaurantDetailPage = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Quick Order Card */}
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-sm p-6 text-white">
+            <div className="bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl shadow-sm p-6 text-white">
               <h3 className="font-semibold mb-2">Ready to Order?</h3>
               <p className="text-orange-100 text-sm mb-4">
                 Click below to order from your preferred delivery service
@@ -397,6 +412,12 @@ const RestaurantDetailPage = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Menu Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">📋 Menu</h2>
+          <RestaurantMenu restaurantId={_id} />
         </div>
       </div>
     </div>

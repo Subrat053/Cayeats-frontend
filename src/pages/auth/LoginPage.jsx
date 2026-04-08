@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, AlertCircle, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -13,9 +13,85 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [savedEmails, setSavedEmails] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Load saved emails on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("cayeats_saved_logins");
+    if (stored) {
+      try {
+        const logins = JSON.parse(stored);
+        setSavedEmails(logins);
+      } catch (err) {
+        console.error("Failed to parse saved logins:", err);
+      }
+    }
+  }, []);
+
+  // Handle email suggestions
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setShowSuggestions(true);
+  };
+
+  const handleEmailFocus = () => {
+    setShowSuggestions(true);
+  };
+
+  // Auto-fill form when suggestion is clicked
+  const handleSuggestionClick = (savedEmail) => {
+    setEmail(savedEmail);
+    setShowSuggestions(false);
+    setPassword("");
+  };
+
+  // Save email to localStorage when login is successful
+  const saveEmail = (emailToSave) => {
+    try {
+      let logins = [];
+      const stored = localStorage.getItem("cayeats_saved_logins");
+      if (stored) {
+        logins = JSON.parse(stored);
+      }
+
+      // Remove if already exists (to avoid duplicates)
+      logins = logins.filter((e) => e !== emailToSave);
+
+      // Add to beginning of array (most recent first)
+      logins.unshift(emailToSave);
+
+      // Keep only last 5 emails
+      logins = logins.slice(0, 5);
+
+      localStorage.setItem("cayeats_saved_logins", JSON.stringify(logins));
+      setSavedEmails(logins);
+    } catch (err) {
+      console.error("Failed to save login:", err);
+    }
+  };
+
+  // Remove a saved email
+  const removeSavedEmail = (emailToRemove, e) => {
+    e.stopPropagation();
+    try {
+      let logins = [];
+      const stored = localStorage.getItem("cayeats_saved_logins");
+      if (stored) {
+        logins = JSON.parse(stored);
+      }
+
+      logins = logins.filter((e) => e !== emailToRemove);
+      localStorage.setItem("cayeats_saved_logins", JSON.stringify(logins));
+      setSavedEmails(logins);
+    } catch (err) {
+      console.error("Failed to remove login:", err);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,13 +100,25 @@ const LoginPage = () => {
     try {
       // ✅ pass role (not selectedType) and navigate
       const result = await login(email, password, role, navigate);
-      if (!result.success) setError(result.error);
+      if (!result.success) {
+        setError(result.error);
+      } else {
+        // Save email if remember me is checked
+        if (rememberMe) {
+          saveEmail(email);
+        }
+      }
     } catch (err) {
       setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
   };
+
+  // Filter suggestions based on current email input
+  const filteredSuggestions = email
+    ? savedEmails.filter((e) => e.toLowerCase().includes(email.toLowerCase()))
+    : savedEmails;
 
   return (
     <div className="min-h-screen flex">
@@ -50,7 +138,7 @@ const LoginPage = () => {
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
@@ -72,15 +160,46 @@ const LoginPage = () => {
               </select>
             </div>
 
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              icon={Mail}
-              required
-            />
+            {/* Email with Suggestions */}
+            <div className="relative">
+              <Input
+                label="Email"
+                type="email"
+                value={email}
+                onChange={handleEmailChange}
+                onFocus={handleEmailFocus}
+                placeholder="you@example.com"
+                icon={Mail}
+                required
+              />
+
+              {/* Email Suggestions Dropdown */}
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                  {filteredSuggestions.map((suggestedEmail, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0 group"
+                      onClick={() => handleSuggestionClick(suggestedEmail)}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900 truncate font-medium">
+                          {suggestedEmail}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => removeSavedEmail(suggestedEmail, e)}
+                        className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                        title="Remove from suggestions"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="relative">
               <Input
@@ -95,7 +214,8 @@ const LoginPage = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-9.5 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -109,7 +229,9 @@ const LoginPage = () => {
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded text-orange-500"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded text-orange-500 border-gray-300 focus:ring-orange-500"
                 />
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
@@ -150,7 +272,7 @@ const LoginPage = () => {
           alt="Food"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 to-orange-800/90" />
+        <div className="absolute inset-0 bg-linear-to-br from-orange-600/90 to-orange-800/90" />
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <div className="text-center text-white">
             <h2 className="text-4xl font-bold mb-4">Island Dining Authority</h2>

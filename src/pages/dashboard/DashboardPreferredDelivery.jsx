@@ -14,8 +14,10 @@ import {
   purchasePreferredDelivery,
   getRestaurantProfile,
 } from "../../api/restaurantService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const DashboardPreferredDelivery = () => {
+  const { currencySymbol, currency } = useCurrency();
   const [pricing, setPricing] = useState(null);
   const [active, setActive] = useState(null);
   const [providers, setProviders] = useState([]); // ✅ real providers from restaurant
@@ -302,9 +304,9 @@ const DashboardPreferredDelivery = () => {
                 )}
                 <h3 className="font-semibold text-gray-900">{plan.name}</h3>
                 <p className="text-3xl font-bold text-orange-500 mt-2">
-                  ${plan.price}
+                  {currencySymbol}{plan.price}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">USD — one time</p>
+                <p className="text-xs text-gray-500 mt-1">{currency} — one time</p>
               </div>
             ))}
           </div>
@@ -328,7 +330,7 @@ const DashboardPreferredDelivery = () => {
               <div className="flex justify-between border-t pt-2">
                 <span className="font-semibold">Total</span>
                 <span className="text-2xl font-bold text-orange-500">
-                  ${selectedPlan.price} USD
+                  {currencySymbol}{selectedPlan.price} {currency}
                 </span>
               </div>
             </div>

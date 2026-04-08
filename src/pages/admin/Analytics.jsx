@@ -30,8 +30,10 @@ import {
   Area,
 } from "recharts";
 import { getAdminAnalytics, getAdminDashboard } from "../../api/adminService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const Analytics = () => {
+  const { currencySymbol } = useCurrency();
   const [analytics, setAnalytics] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -286,7 +288,7 @@ const Analytics = () => {
         />
         <StatCard
           label="Total Revenue"
-          value={`$${(stats?.totalRevenue || 0).toLocaleString()}`}
+          value={`${currencySymbol}${(stats?.totalRevenue || 0).toLocaleString()}`}
           icon={DollarSign}
           bg="bg-green-50"
           color="text-green-600"
@@ -376,7 +378,7 @@ const Analytics = () => {
                   border: "1px solid #E5E7EB",
                   borderRadius: "8px",
                 }}
-                formatter={(value) => `$${value.toFixed(2)}`}
+                formatter={(value) => `${currencySymbol}${value.toFixed(2)}`}
               />
               <Line
                 type="monotone"
@@ -603,7 +605,7 @@ const Analytics = () => {
               Avg Revenue/Click
             </p>
             <p className="text-2xl font-bold text-green-600 mt-2">
-              $
+              {currencySymbol}
               {stats?.totalClicks > 0
                 ? (stats?.totalRevenue / stats?.totalClicks).toFixed(2)
                 : "0"}

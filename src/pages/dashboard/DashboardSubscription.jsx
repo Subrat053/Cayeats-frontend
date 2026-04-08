@@ -18,6 +18,7 @@ import {
   toggleAutoRenew,
 } from "../../api/restaurantService";
 import Button from "../../components/ui/Button";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const PLAN_ICONS = { Silver: Star, Gold: Zap, Platinum: Crown };
 const PLAN_COLORS = {
@@ -42,6 +43,7 @@ const PLAN_COLORS = {
 };
 
 const DashboardSubscription = () => {
+  const { currencySymbol } = useCurrency();
   const [plans, setPlans] = useState([]);
   const [current, setCurrent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -159,8 +161,8 @@ const DashboardSubscription = () => {
             {currentYear.charAt(0).toUpperCase() + currentYear.slice(1)} (
             {discount}% off)
             <br />
-            <strong>Base Prices:</strong> Semi-Annual: ${basePricing.semiAnnual}{" "}
-            | Annual: ${basePricing.annual}
+            <strong>Base Prices:</strong> Semi-Annual: {currencySymbol}{basePricing.semiAnnual}{" "}
+            | Annual: {currencySymbol}{basePricing.annual}
           </p>
         </div>
         <Button
@@ -344,25 +346,25 @@ const DashboardSubscription = () => {
                   <>
                     <div className="flex items-baseline gap-2">
                       <span className="text-4xl font-bold text-gray-900">
-                        ${plan.finalPrice}
+                        {currencySymbol}{plan.finalPrice}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-sm line-through text-gray-400">
-                        ${plan.price}
+                        {currencySymbol}{plan.price}
                       </span>
                       <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
                         {plan.discount}% off
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      First year only · renews at ${plan.price}
+                      First year only · renews at {currencySymbol}{plan.price}
                     </p>
                   </>
                 ) : (
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold text-gray-900">
-                      ${plan.price}
+                      {currencySymbol}{plan.price}
                     </span>
                   </div>
                 )}
@@ -406,7 +408,7 @@ const DashboardSubscription = () => {
                     <CheckCircle className="w-4 h-4" /> Active Plan
                   </>
                 ) : (
-                  `Subscribe — $${plan.finalPrice}`
+                  `Subscribe — ${currencySymbol}${plan.finalPrice}`
                 )}
               </Button>
             </div>

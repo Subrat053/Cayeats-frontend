@@ -17,8 +17,10 @@ import {
 } from "lucide-react";
 import { getAdminSettings, updateAdminSettings } from "../../api/adminService";
 import Button from "../../components/ui/Button";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const PricingSettings = () => {
+  const { currencySymbol, currency } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -160,7 +162,7 @@ const PricingSettings = () => {
     width = "w-20",
   }) => (
     <div className="flex items-center gap-1">
-      <span className="text-gray-400">$</span>
+      <span className="text-gray-400">{currencySymbol}</span>
       <input
         type="number"
         min="0"
@@ -177,15 +179,15 @@ const PricingSettings = () => {
   const ReadonlyMoney = ({ value, discounted = false }) => (
     <div className="text-center">
       <span className="inline-block px-3 py-1 bg-gray-100 border border-gray-200 rounded-lg text-gray-700 font-bold">
-        ${value.toLocaleString()}
+        {currencySymbol}{value.toLocaleString()}
       </span>
       {discounted && (
         <div className="mt-1">
           <span className="text-xs text-green-600 font-medium line-through">
-            ${value.toLocaleString()}
+            {currencySymbol}{value.toLocaleString()}
           </span>
           <span className="ml-1 text-xs font-bold text-green-700">
-            ${applyDiscount(value).toLocaleString()} 1st yr
+            {currencySymbol}{applyDiscount(value).toLocaleString()} 1st yr
           </span>
         </div>
       )}
@@ -353,13 +355,13 @@ const PricingSettings = () => {
                     <div className="flex justify-between p-2 bg-gray-50 rounded">
                       <span className="text-gray-600">Semi-Annual Claim:</span>
                       <span className="font-bold text-gray-900">
-                        ${applyDiscount(claimPricing.semiAnnual, year)}
+                        {currencySymbol}{applyDiscount(claimPricing.semiAnnual, year)}
                       </span>
                     </div>
                     <div className="flex justify-between p-2 bg-gray-50 rounded">
                       <span className="text-gray-600">Annual Claim:</span>
                       <span className="font-bold text-gray-900">
-                        ${applyDiscount(claimPricing.annual, year)}
+                        {currencySymbol}{applyDiscount(claimPricing.annual, year)}
                       </span>
                     </div>
                   </div>
@@ -426,7 +428,7 @@ const PricingSettings = () => {
                       ({yearlyDiscounts[year]}% off):
                     </p>
                     <p className="text-lg font-bold text-gray-900">
-                      ${applyDiscount(claimPricing[key], year)}
+                      {currencySymbol}{applyDiscount(claimPricing[key], year)}
                     </p>
                   </div>
                 ))}
@@ -494,7 +496,7 @@ const PricingSettings = () => {
                     }
                   />
                   <p className="text-xs text-green-600 mt-1">
-                    1st yr: ${applyDiscount(productPlans[key][period])}
+                    1st yr: {currencySymbol}{applyDiscount(productPlans[key][period])}
                   </p>
                 </div>
               ))}
@@ -561,12 +563,12 @@ const PricingSettings = () => {
                   </td>
                   <td className="py-4 px-4 text-center">
                     <span className="px-3 py-1 bg-gray-100 rounded-lg font-bold text-gray-700">
-                      ${calcSemiAnnual(ad.monthly).toLocaleString()}
+                      {currencySymbol}{calcSemiAnnual(ad.monthly).toLocaleString()}
                     </span>
                   </td>
                   <td className="py-4 px-4 text-center">
                     <span className="px-3 py-1 bg-gray-100 rounded-lg font-bold text-gray-700">
-                      ${calcAnnual(ad.monthly).toLocaleString()}
+                      {currencySymbol}{calcAnnual(ad.monthly).toLocaleString()}
                     </span>
                   </td>
                   <td className="py-4 px-4 text-sm text-gray-500">{ad.desc}</td>
@@ -622,12 +624,12 @@ const PricingSettings = () => {
                   </td>
                   <td className="py-4 px-4 text-center">
                     <span className="px-3 py-1 bg-gray-100 rounded-lg font-bold text-gray-700">
-                      ${calcSemiAnnual(promo.monthly).toLocaleString()}
+                      {currencySymbol}{calcSemiAnnual(promo.monthly).toLocaleString()}
                     </span>
                   </td>
                   <td className="py-4 px-4 text-center">
                     <span className="px-3 py-1 bg-gray-100 rounded-lg font-bold text-gray-700">
-                      ${calcAnnual(promo.monthly).toLocaleString()}
+                      {currencySymbol}{calcAnnual(promo.monthly).toLocaleString()}
                     </span>
                   </td>
                   <td className="py-4 px-4 text-sm text-gray-500">
@@ -660,7 +662,7 @@ const PricingSettings = () => {
             >
               <h3 className="font-semibold text-gray-900 mb-4">{label}</h3>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-gray-400 text-xl">$</span>
+                <span className="text-gray-400 text-xl">{currencySymbol}</span>
                 <input
                   type="number"
                   min="0"
@@ -696,7 +698,7 @@ const PricingSettings = () => {
               <h3 className="font-semibold text-gray-900 mb-1">Monthly</h3>
               <p className="text-xs text-gray-500 mb-3">(editable)</p>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-gray-400 text-xl">$</span>
+                <span className="text-gray-400 text-xl">{currencySymbol}</span>
                 <input
                   type="number"
                   min="0"
@@ -714,14 +716,14 @@ const PricingSettings = () => {
               <h3 className="font-semibold text-gray-900 mb-1">Semi-Annual</h3>
               <p className="text-xs text-green-600 mb-3">×6 −5%</p>
               <p className="text-4xl font-bold text-gray-900">
-                ${calcSemiAnnual(priorityDeliveryMonthly).toLocaleString()}
+                {currencySymbol}{calcSemiAnnual(priorityDeliveryMonthly).toLocaleString()}
               </p>
             </div>
             <div className="rounded-xl border-2 border-gray-200 bg-gray-50 p-6 text-center">
               <h3 className="font-semibold text-gray-900 mb-1">Annual</h3>
               <p className="text-xs text-green-600 mb-3">×12 −10%</p>
               <p className="text-4xl font-bold text-gray-900">
-                ${calcAnnual(priorityDeliveryMonthly).toLocaleString()}
+                {currencySymbol}{calcAnnual(priorityDeliveryMonthly).toLocaleString()}
               </p>
             </div>
           </div>
@@ -729,11 +731,11 @@ const PricingSettings = () => {
           <div className="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg flex items-start gap-3">
             <Calculator className="w-5 h-5 text-indigo-600 mt-0.5 shrink-0" />
             <p className="text-sm text-indigo-800">
-              <strong>Formula:</strong> Semi-Annual = ${priorityDeliveryMonthly}{" "}
+              <strong>Formula:</strong> Semi-Annual = {currencySymbol}{priorityDeliveryMonthly}{" "}
               × 6 × 0.95 ={" "}
-              <strong>${calcSemiAnnual(priorityDeliveryMonthly)}</strong>{" "}
-              &nbsp;|&nbsp; Annual = ${priorityDeliveryMonthly} × 12 × 0.90 ={" "}
-              <strong>${calcAnnual(priorityDeliveryMonthly)}</strong>
+              <strong>{currencySymbol}{calcSemiAnnual(priorityDeliveryMonthly)}</strong>{" "}
+              &nbsp;|&nbsp; Annual = {currencySymbol}{priorityDeliveryMonthly} × 12 × 0.90 ={" "}
+              <strong>{currencySymbol}{calcAnnual(priorityDeliveryMonthly)}</strong>
             </p>
           </div>
         </div>
@@ -766,7 +768,7 @@ const PricingSettings = () => {
               Monthly entered; Semi-Annual & Annual auto-calculated.
             </li>
             <li>
-              • All prices in USD. Changes apply to new purchases immediately
+              • All prices in {currency}. Changes apply to new purchases immediately
               after saving.
             </li>
           </ul>

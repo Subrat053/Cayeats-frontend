@@ -5,8 +5,10 @@ import {
   updateRestaurantProfile,
 } from "../../api/restaurantService.js";
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const DashboardOverview = () => {
+  const { currencySymbol } = useCurrency();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -201,7 +203,7 @@ const DashboardOverview = () => {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <p className="text-sm text-gray-500">Total Revenue</p>
           <p className="text-3xl font-bold text-gray-900 mt-1">
-            ${stats?.totalRevenue ? stats.totalRevenue.toFixed(2) : "0.00"}
+            {currencySymbol}{stats?.totalRevenue ? stats.totalRevenue.toFixed(2) : "0.00"}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -228,7 +230,7 @@ const DashboardOverview = () => {
                   Order #{order._id?.slice(-6)}
                 </span>
                 <span className="text-sm font-medium">
-                  ${order.totalAmount?.toFixed(2) || "0.00"}
+                  {currencySymbol}{order.totalAmount?.toFixed(2) || "0.00"}
                 </span>
               </div>
             ))}

@@ -1,18 +1,20 @@
-import DashboardLayout from './DashboardLayout';
-import DashboardOverview from './DashboardOverview';
-import DashboardProfile from './DashboardProfile';
-import DashboardAnalytics from './DashboardAnalytics';
-import DashboardAdvertising from './DashboardAdvertising';
-import DashboardMenu from './DashboardMenu';
-import DashboardSubscription from './DashboardSubscription';
-import DashboardClaimSubscription from './DashboardClaimSubscription';
-import DashboardFeaturedListings from './DashboardFeaturedListings';
-import DashboardTonightsCravings from './DashboardTonightsCravings';
-import DashboardBannerAds from './DashboardBannerAds';
-import DashboardPreferredDelivery from './DashboardPreferredDelivery';
-import DashboardBilling from './DashboardBilling';
-import DashboardOrders from './DashboardOrders';
-import DashboardProducts from './DashboardProducts';
+import DashboardLayout from "./DashboardLayout";
+import DashboardOverview from "./DashboardOverview";
+import DashboardProfile from "./DashboardProfile";
+import DashboardAnalytics from "./DashboardAnalytics";
+import DashboardAdvertising from "./DashboardAdvertising";
+import DashboardMenu from "./DashboardMenu";
+import DashboardCategories from "./DashboardCategories";
+import DashboardCategoryAnalytics from "./DashboardCategoryAnalytics";
+import DashboardSubscription from "./DashboardSubscription";
+import DashboardClaimSubscription from "./DashboardClaimSubscription";
+import DashboardFeaturedListings from "./DashboardFeaturedListings";
+import DashboardTonightsCravings from "./DashboardTonightsCravings";
+import DashboardBannerAds from "./DashboardBannerAds";
+import DashboardPreferredDelivery from "./DashboardPreferredDelivery";
+import DashboardBilling from "./DashboardBilling";
+import DashboardOrders from "./DashboardOrders";
+import DashboardProducts from "./DashboardProducts";
 
 export {
   DashboardLayout,
@@ -21,6 +23,8 @@ export {
   DashboardAnalytics,
   DashboardAdvertising,
   DashboardMenu,
+  DashboardCategories,
+  DashboardCategoryAnalytics,
   DashboardSubscription,
   DashboardClaimSubscription,
   DashboardFeaturedListings,

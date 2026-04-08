@@ -13,8 +13,10 @@ import {
   Eye,
 } from "lucide-react";
 import { getAdminDashboard } from "../../api/adminService";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const AdminDashboard = () => {
+  const { currencySymbol } = useCurrency();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -61,7 +63,7 @@ const AdminDashboard = () => {
     },
     {
       name: "Total Revenue",
-      value: `$${(data?.totalRevenue ?? 0).toLocaleString()}`,
+      value: `${currencySymbol}${(data?.totalRevenue ?? 0).toLocaleString()}`,
       icon: DollarSign,
       href: "/admin/analytics",
       bg: "bg-green-50",

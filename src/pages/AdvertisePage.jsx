@@ -14,8 +14,10 @@ import {
   StyledSection,
   StyledFeatureBox,
 } from "../components/ui/StyledContentSection";
+import { useCurrency } from "../context/CurrencyContext";
 
 const AdvertisePage = () => {
+  const { currencySymbol } = useCurrency();
   const advertisingOptions = [
     {
       icon: Eye,
@@ -27,7 +29,7 @@ const AdvertisePage = () => {
         "Increased visibility in search results",
         "Higher click-through rates",
       ],
-      price: "From $99/month",
+      price: `From ${currencySymbol}99/month`,
     },
     {
       icon: Smartphone,
@@ -39,7 +41,7 @@ const AdvertisePage = () => {
         "High engagement rates",
         "Trackable analytics",
       ],
-      price: "From $199/month",
+      price: `From ${currencySymbol}199/month`,
     },
     {
       icon: Target,
@@ -51,7 +53,7 @@ const AdvertisePage = () => {
         "Customer behavior targeting",
         "Custom audience segments",
       ],
-      price: "From $299/month",
+      price: `From ${currencySymbol}299/month`,
     },
   ];
 

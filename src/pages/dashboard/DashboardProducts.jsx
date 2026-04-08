@@ -8,8 +8,10 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Input from '../../components/ui/Input';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const DashboardProducts = () => {
+  const { currencySymbol } = useCurrency();
   const [activeTab, setActiveTab] = useState('products');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showPlanSelector, setShowPlanSelector] = useState(false);
@@ -199,7 +201,7 @@ const DashboardProducts = () => {
                     </div>
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-600">{product.category}</td>
-                  <td className="py-3 px-4 text-center text-sm font-medium">${product.price}</td>
+                  <td className="py-3 px-4 text-center text-sm font-medium">{currencySymbol}{product.price}</td>
                   <td className="py-3 px-4 text-center">
                     <span className={`text-sm ${product.images >= currentPlanData?.imagesPerProduct ? 'text-orange-600' : 'text-gray-600'}`}>
                       {product.images}/{currentPlanData?.imagesPerProduct}
@@ -260,7 +262,7 @@ const DashboardProducts = () => {
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Price ($)</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">Price ({currencySymbol})</label>
                   <Input type="number" step="0.01" value={newProduct.price} onChange={(e) => setNewProduct({...newProduct, price: e.target.value})} placeholder="0.00" />
                 </div>
                 <div>
@@ -351,11 +353,11 @@ const DashboardProducts = () => {
                   </p>
                   <div className="space-y-2 mb-4">
                     <div>
-                      <span className="text-2xl font-bold text-gray-900">${plan.semiAnnual}</span>
+                      <span className="text-2xl font-bold text-gray-900">{currencySymbol}{plan.semiAnnual}</span>
                       <span className="text-gray-500 text-sm"> /6 months</span>
                     </div>
                     <div>
-                      <span className="text-2xl font-bold text-gray-900">${plan.annual}</span>
+                      <span className="text-2xl font-bold text-gray-900">{currencySymbol}{plan.annual}</span>
                       <span className="text-gray-500 text-sm"> /year</span>
                     </div>
                   </div>

@@ -90,9 +90,18 @@ export function AuthProvider({ children }) {
   };
 
   const logout = (navigate) => {
+    // Save currency before clearing localStorage (it's a global platform setting, not user-specific)
+    const savedCurrency = localStorage.getItem("platformCurrency");
+
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+
+    // Restore currency after clearing
+    if (savedCurrency) {
+      localStorage.setItem("platformCurrency", savedCurrency);
+    }
+
     if (navigate) navigate("/login");
   };
 
