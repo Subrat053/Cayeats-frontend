@@ -104,7 +104,7 @@ const Header = () => {
             </button>
 
             <Link
-              to="/profile"
+              to="/account"
               className="relative p-2 text-gray-500 hover:text-red-500 hover:bg-gray-100 rounded-lg"
             >
               <Heart className="w-5 h-5" />
@@ -149,12 +149,12 @@ const Header = () => {
                       </div>
 
                       <Link
-                        to="/profile"
+                        to="/account"
                         onClick={() => setIsUserMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50"
                       >
                         <Heart className="w-4 h-4" />
-                        My Favorites
+                        My Account
                       </Link>
 
                       <Link
@@ -206,6 +206,82 @@ const Header = () => {
         {isSearchOpen && (
           <div className="lg:hidden pb-4">
             <SearchBar />
+          </div>
+        )}
+
+        {isMobileMenuOpen && (
+          <div className="md:hidden pb-4">
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 space-y-3">
+              <nav className="flex flex-col gap-2">
+                <NavLink
+                  to="/restaurants"
+                  className="nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Restaurants
+                </NavLink>
+                <NavLink
+                  to="/cuisines"
+                  className="nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Cuisines
+                </NavLink>
+                <NavLink
+                  to="/partner"
+                  className="nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Partner With Us
+                </NavLink>
+                <NavLink
+                  to="/about"
+                  className="nav-link"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  About
+                </NavLink>
+              </nav>
+
+              <div className="border-t border-gray-100 pt-3 flex flex-col gap-2">
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      to={getDashboardLink()}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-gray-50"
+                    >
+                      <DashboardIcon className="w-4 h-4" />
+                      {getDashboardLabel()}
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Button variant="ghost" size="sm">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Button size="sm">Get Started</Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>

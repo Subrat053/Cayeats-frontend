@@ -1,7 +1,5 @@
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
+import LoginPage from "./LoginPage";
+import RegisterPage from "./RegisterPage";
+import ForgotPasswordPage from "./ForgotPasswordPage";
 
-export {
-  LoginPage,
-  RegisterPage,
-};
+export { LoginPage, RegisterPage, ForgotPasswordPage };

@@ -42,11 +42,16 @@ const UserProfilePage = () => {
   const memberYear = user?.createdAt
     ? new Date(user.createdAt).getFullYear()
     : new Date().getFullYear();
+  const quickLinks = [
+    { label: "Browse Restaurants", to: "/restaurants" },
+    { label: "Explore Cuisines", to: "/cuisines" },
+    { label: "Go Home", to: "/" },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Profile Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600">
+      <div className="bg-linear-to-r from-orange-500 to-orange-600">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar */}
@@ -61,7 +66,7 @@ const UserProfilePage = () => {
 
             {/* Info */}
             <div className="text-center sm:text-left">
-              <h1 className="text-2xl font-bold text-white">{displayName}</h1>
+              <h1 className="text-2xl font-bold text-white">My Account</h1>
               <p className="text-orange-100 mt-1">
                 {user?.email || "Sign in to save your favorites"}
               </p>
@@ -141,6 +146,17 @@ const UserProfilePage = () => {
                 Start exploring restaurants and tap the heart icon to save your
                 favorites for quick access later.
               </p>
+              <div className="mt-8 grid gap-3 sm:grid-cols-3 max-w-2xl mx-auto">
+                {quickLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="inline-flex items-center justify-center px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:border-orange-300 hover:text-orange-600 hover:shadow-sm transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
               <Link
                 to="/restaurants"
                 className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors"

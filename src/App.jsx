@@ -36,7 +36,7 @@ import {
   AboutPage,
 } from "./pages";
 
-import { LoginPage, RegisterPage } from "./pages/auth";
+import { LoginPage, RegisterPage, ForgotPasswordPage } from "./pages/auth";
 
 import {
   AdminDashboard,
@@ -89,6 +89,10 @@ function App() {
                     {/* ── Auth Routes ── */}
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route
+                      path="/forgot-password"
+                      element={<ForgotPasswordPage />}
+                    />
 
                     {/* ── Public Routes ── */}
                     <Route element={<MainLayout />}>
@@ -117,6 +121,7 @@ function App() {
                       <Route path="/privacy" element={<PrivacyPage />} />
                       <Route path="/cookies" element={<CookiesPage />} />
                       <Route path="/advertise" element={<AdvertisePage />} />
+                      <Route path="/account" element={<UserProfilePage />} />
                       <Route path="/profile" element={<UserProfilePage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Route>
