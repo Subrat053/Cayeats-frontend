@@ -35,6 +35,7 @@ const Button = ({
   type = "button",
   fullWidth = false,
   size = "md",
+  loading = false,
   ...props
 }) => {
   const colors = variants[variant] || variants.primary;

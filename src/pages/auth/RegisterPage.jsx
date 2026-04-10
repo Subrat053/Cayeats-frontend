@@ -336,6 +336,7 @@ const RegisterPage = () => {
                 onChange={handleChange}
                 placeholder="Create a password"
                 icon={Lock}
+                autoComplete="new-password"
                 required
               />
               <button
@@ -359,6 +360,7 @@ const RegisterPage = () => {
               onChange={handleChange}
               placeholder="Confirm your password"
               icon={Lock}
+              autoComplete="new-password"
               required
             />
 

@@ -209,6 +209,7 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 icon={Lock}
+                autoComplete="current-password"
                 required
               />
               <button

@@ -90,6 +90,11 @@ export const getDeliveryProviders = async () => {
   return res.data?.data;
 };
 
+export const createDeliveryProvider = async (providerData) => {
+  const res = await api.post("/admin/delivery-providers", providerData);
+  return res.data?.data;
+};
+
 //updation of admin on pricings
 export const getAdminSettings = async () => {
   const res = await api.get("/admin/settings");

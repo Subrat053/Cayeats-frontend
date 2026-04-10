@@ -161,6 +161,14 @@ export const getDeliveryClicks = async () => {
   return res.data?.data || res.data;
 };
 
+export const updateDeliveryProvider = async (providerName, orderUrl) => {
+  const res = await api.put("/restaurant/delivery-providers", {
+    providerName,
+    orderUrl,
+  });
+  return res.data?.data;
+};
+
 export const getSubscriptionPricing = async () => {
   const res = await api.get("/restaurant/subscription/pricing");
   return res.data?.data;

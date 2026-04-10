@@ -10,7 +10,10 @@ import {
   Check,
   ArrowUpDown,
 } from "lucide-react";
-import { getDeliveryProviders } from "../../api/adminService";
+import {
+  getDeliveryProviders,
+  createDeliveryProvider,
+} from "../../api/adminService";
 
 const PROVIDER_COLORS = {
   Bento: "#f97316",
@@ -62,21 +65,30 @@ const ManageDeliveryProviders = () => {
 
   const handleAddProvider = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) return;
+    if (!form.name.trim()) {
+      setError("Provider name is required");
+      return;
+    }
     setSaving(true);
+    setError(null);
     try {
-      // For now adds to local list — wire to backend when provider model is added
-      const newProvider = {
+      // Call backend API to save provider
+      const providerData = {
         name: form.name,
         website: form.website,
         contactEmail: form.contactEmail,
         contactPhone: form.contactPhone,
         commission: parseFloat(form.commission) || 0,
-        totalClicks: 0,
-        restaurants: 0,
-        isNew: true,
+        notes: form.notes,
       };
-      setProviders((prev) => [...prev, newProvider]);
+
+      await createDeliveryProvider(providerData);
+
+      // Refresh the provider list from backend
+      const updatedProviders = await getDeliveryProviders();
+      setProviders(updatedProviders || []);
+
+      // Reset form
       setForm({
         name: "",
         website: "",
@@ -88,7 +100,9 @@ const ManageDeliveryProviders = () => {
       setShowModal(false);
       flash(`${form.name} added as a delivery provider`);
     } catch (err) {
-      setError(err.message);
+      const errorMsg =
+        err.response?.data?.message || err.message || "Failed to add provider";
+      setError(errorMsg);
     } finally {
       setSaving(false);
     }

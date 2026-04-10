@@ -9,10 +9,13 @@ import {
   Camera,
   X,
   Plus,
+  Link as LinkIcon,
+  ExternalLink,
 } from "lucide-react";
 import {
   getRestaurantProfile,
   updateRestaurantProfile,
+  updateDeliveryProvider,
 } from "../../api/restaurantService";
 import { cuisineCategories } from "../../data/mockData";
 
@@ -28,8 +31,11 @@ const DAYS = [
 
 const DashboardProfile = () => {
   const [formData, setFormData] = useState(null);
+  const [deliveryProviders, setDeliveryProviders] = useState([]);
+  const [editingProvider, setEditingProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingProvider, setSavingProvider] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
@@ -47,8 +53,9 @@ const DashboardProfile = () => {
           website: data.website || "",
           instagram: data.instagram || "",
           openingHours: data.openingHours || {},
-          // ✅ NO delivery URLs - admin only per spec
         });
+        // ✅ Load delivery providers
+        setDeliveryProviders(data.deliveryProviders || []);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -300,15 +307,123 @@ const DashboardProfile = () => {
         </div>
       </div>
 
-      {/* ✅ Delivery URLs removed - ADMIN ONLY per CayEats spec */}
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">
+      {/* ✅ Delivery Provider URLs - Restaurants can set their own */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <LinkIcon className="w-5 h-5 text-orange-500" />
           Delivery Provider Links
         </h2>
-        <p className="text-sm text-gray-500">
-          🔒 Delivery provider URLs are managed by the CayEats admin team.
-          Contact support if your delivery links need to be updated.
+        <p className="text-sm text-gray-600 mb-4">
+          Add your order links for each delivery platform. Customers will see
+          these buttons on your restaurant page.
         </p>
+
+        <div className="space-y-4">
+          {deliveryProviders.length === 0 ? (
+            <p className="text-gray-400 text-sm">
+              No delivery providers available
+            </p>
+          ) : (
+            deliveryProviders.map((provider, idx) => (
+              <div key={idx} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center font-bold text-orange-600">
+                      {provider.providerName.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">
+                        {provider.providerName}
+                      </h3>
+                      <p className="text-xs text-gray-500">
+                        {provider.orderUrl
+                          ? "✅ Configured"
+                          : "⚠️ Not configured"}
+                      </p>
+                    </div>
+                  </div>
+                  {editingProvider !== idx && (
+                    <button
+                      onClick={() => setEditingProvider(idx)}
+                      className="text-sm text-orange-500 hover:text-orange-600 font-medium"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+
+                {editingProvider === idx ? (
+                  <div className="space-y-3 border-t border-gray-200 pt-3">
+                    <input
+                      type="url"
+                      value={provider.orderUrl || ""}
+                      onChange={(e) => {
+                        const updated = [...deliveryProviders];
+                        updated[idx].orderUrl = e.target.value;
+                        setDeliveryProviders(updated);
+                      }}
+                      placeholder="https://bento.ky/order?restaurant=..."
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingProvider(null)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          setSavingProvider(true);
+                          setError(null);
+                          try {
+                            await updateDeliveryProvider(
+                              provider.providerName,
+                              provider.orderUrl,
+                            );
+                            setSuccessMsg(
+                              `${provider.providerName} link saved!`,
+                            );
+                            setTimeout(() => setSuccessMsg(null), 3000);
+                            setEditingProvider(null);
+                          } catch (err) {
+                            setError(
+                              err.message || "Failed to save provider link",
+                            );
+                          } finally {
+                            setSavingProvider(false);
+                          }
+                        }}
+                        disabled={savingProvider}
+                        className="flex-1 px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 disabled:opacity-50"
+                      >
+                        {savingProvider ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border-t border-gray-200 pt-3">
+                    {provider.orderUrl ? (
+                      <a
+                        href={provider.orderUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-500 hover:text-blue-600 flex items-center gap-1 break-all"
+                      >
+                        {provider.orderUrl}
+                        <ExternalLink className="w-3 h-3 shrink-0" />
+                      </a>
+                    ) : (
+                      <p className="text-sm text-gray-400">
+                        No URL configured yet
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
