@@ -1,4 +1,5 @@
 import api from "./axios";
+import { validateApiResponse } from "../utils/validation";
 
 // ─── Dashboard ────────────────────────────────────────────
 export const getDashboardData = async () => {
@@ -20,29 +21,44 @@ export const getDashboardData = async () => {
 // ─── Profile ──────────────────────────────────────────────
 export const getRestaurantProfile = async () => {
   const res = await api.get("/restaurant/profile");
+  if (!validateApiResponse(res.data, ["data"])) {
+    throw new Error("Invalid restaurant profile data received");
+  }
   return res.data?.data;
 };
 
 export const updateRestaurantProfile = async (data) => {
   const res = await api.put("/restaurant/profile", data);
+  if (!validateApiResponse(res.data, ["data"])) {
+    throw new Error("Invalid response from profile update");
+  }
   return res.data?.data;
 };
 
 // ─── Stats ────────────────────────────────────────────────
 export const getRestaurantStats = async () => {
   const res = await api.get("/restaurant/stats");
+  if (!validateApiResponse(res.data, ["data"])) {
+    return {};
+  }
   return res.data?.data || res.data;
 };
 
 // ─── Hours ────────────────────────────────────────────────
 export const updateRestaurantHours = async (hours) => {
   const res = await api.put("/restaurant/hours", { hours });
+  if (!validateApiResponse(res.data, ["data"])) {
+    throw new Error("Invalid response from hours update");
+  }
   return res.data?.data;
 };
 
 // ─── Analytics ────────────────────────────────────────────
 export const getAnalytics = async () => {
   const res = await api.get("/restaurant/analytics");
+  if (!validateApiResponse(res.data, ["data"])) {
+    return {};
+  }
   return res.data?.data;
 };
 
@@ -138,16 +154,25 @@ export const uploadImage = async (file) => {
 // ─── Products ─────────────────────────────────────────────
 export const getProducts = async () => {
   const res = await api.get("/restaurant/products");
+  if (!validateApiResponse(res.data, ["data"])) {
+    return [];
+  }
   return res.data?.data;
 };
 
 export const addProduct = async (data) => {
   const res = await api.post("/restaurant/products", data);
+  if (!validateApiResponse(res.data, ["data"])) {
+    throw new Error("Invalid product data received from server");
+  }
   return res.data?.data;
 };
 
 export const updateProduct = async (id, data) => {
   const res = await api.put(`/restaurant/products/${id}`, data);
+  if (!validateApiResponse(res.data, ["data"])) {
+    throw new Error("Invalid response from product update");
+  }
   return res.data?.data;
 };
 
@@ -182,10 +207,31 @@ export const createCheckoutSession = async (plan) => {
 export const getOrders = async (params = {}) => {
   const query = new URLSearchParams(params).toString();
   const res = await api.get(`/restaurant/orders?${query}`);
+  if (!validateApiResponse(res.data, ["data"])) {
+    return [];
+  }
   return res.data?.data;
 };
 
 export const updateOrderStatus = async (id, status) => {
   const res = await api.put(`/restaurant/orders/${id}/status`, { status });
+  return res.data?.data;
+};
+
+// ─── Menu Images ───────────────────────────────────────────
+export const getMenuImages = async () => {
+  const res = await api.get("/restaurant/menu-images");
+  return res.data?.data || [];
+};
+
+export const addMenuImage = async (imageUrl, publicId) => {
+  const res = await api.post("/restaurant/menu-images", { imageUrl, publicId });
+  return res.data?.data;
+};
+
+export const deleteMenuImage = async (imageUrl, publicId) => {
+  const res = await api.delete("/restaurant/menu-images", {
+    data: { imageUrl, publicId },
+  });
   return res.data?.data;
 };

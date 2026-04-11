@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getCategoryAnalytics } from "../../api/categoryService";
+import { logger } from "../../utils/logger";
 import { getRestaurantProfile } from "../../api/restaurantService";
 
 const CategoryAnalytics = () => {
@@ -32,7 +33,7 @@ const CategoryAnalytics = () => {
       const data = await getCategoryAnalytics();
       setAnalytics(data);
     } catch (err) {
-      console.error("Error fetching analytics:", err);
+      logger.error("Error fetching analytics:", err);
       setError("Failed to load category analytics");
     } finally {
       setLoading(false);

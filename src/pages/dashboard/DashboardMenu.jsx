@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api/axios"; // ✅ Import the api instance, not axios directly
 import { useCurrency } from "../../context/CurrencyContext";
+import { logger } from "../../utils/logger";
 import {
   addProduct,
   updateProduct,
@@ -45,7 +46,7 @@ const DashboardMenu = () => {
         // Load menu data
         await fetchData();
       } catch (error) {
-        console.error("Error loading initial data:", error);
+        logger.error("Error loading initial data:", error);
       }
     };
 
@@ -78,7 +79,7 @@ const DashboardMenu = () => {
       setProducts(productsData);
       setCategories(categoriesData);
     } catch (err) {
-      console.error("❌ Error fetching data:", err);
+      logger.error("❌ Error fetching data:", err);
       setError(err.response?.data?.message || "Failed to load menu");
     } finally {
       setLoading(false);

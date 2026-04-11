@@ -20,6 +20,7 @@ import {
   updateAdminSettings,
   uploadAdminBrandingImage,
 } from "../../api/adminService";
+import { logger } from "../../utils/logger";
 
 const AdminSiteSettings = () => {
   const [hasChanges, setHasChanges] = useState(false);
@@ -41,14 +42,14 @@ const AdminSiteSettings = () => {
   });
 
   // --- Payment Settings ---
+  // ⚠️  SECURITY: Secret keys should NEVER be sent to frontend or stored in state
+  // Backend handles secret key storage. Frontend only gets public keys.
   const [payments, setPayments] = useState({
     paypalEnabled: true,
-    paypalClientId: "",
-    paypalSecret: "",
+    paypalClientId: "", // Public key - safe to display
     paypalMode: "sandbox",
     stripeEnabled: false,
-    stripePublicKey: "",
-    stripeSecretKey: "",
+    stripePublicKey: "", // Public key - safe to display
     currency: "USD",
     taxRate: 0,
   });
@@ -66,15 +67,25 @@ const AdminSiteSettings = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       setPageLoading(true);
+      setError(null);
       try {
         const data = await getAdminSettings();
-        if (data) {
-          if (data.branding) setBranding(data.branding);
-          if (data.payments) setPayments(data.payments);
-          if (data.notifications) setNotifications(data.notifications);
+        if (data && typeof data === "object") {
+          // Merge loaded data with existing state to preserve defaults
+          if (data.branding && typeof data.branding === "object") {
+            setBranding((prev) => ({ ...prev, ...data.branding }));
+          }
+          if (data.payments && typeof data.payments === "object") {
+            setPayments((prev) => ({ ...prev, ...data.payments }));
+          }
+          if (data.notifications && typeof data.notifications === "object") {
+            setNotifications((prev) => ({ ...prev, ...data.notifications }));
+          }
         }
       } catch (err) {
-        setError("Failed to load settings: " + err.message);
+        const errorMsg = err.response?.data?.message || err.message;
+        setError("Failed to load settings: " + errorMsg);
+        logger.error("Settings fetch error:", err);
       } finally {
         setPageLoading(false);
       }
@@ -87,11 +98,13 @@ const AdminSiteSettings = () => {
     setError(null);
     try {
       await updateAdminSettings({ branding, payments, notifications });
-      setSuccess("Site settings saved successfully!");
+      setSuccess("✅ Site settings saved successfully!");
       setHasChanges(false);
-      setTimeout(() => setSuccess(null), 3000);
+      setTimeout(() => setSuccess(null), 4000);
     } catch (err) {
-      setError("Failed to save settings: " + err.message);
+      const errorMsg = err.response?.data?.message || err.message;
+      setError("❌ Failed to save settings: " + errorMsg);
+      logger.error("Save error:", err);
     } finally {
       setLoading(false);
     }
@@ -103,10 +116,17 @@ const AdminSiteSettings = () => {
     setError(null);
     try {
       const url = await uploadAdminBrandingImage(file);
+      if (!url) {
+        throw new Error("No URL returned from server");
+      }
       setBranding((prev) => ({ ...prev, [field]: url }));
+      setSuccess(`${field} uploaded successfully!`);
       markChanged();
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError("Failed to upload image: " + err.message);
+      const errorMsg = err.response?.data?.message || err.message;
+      setError("Upload failed: " + errorMsg);
+      logger.error("Upload error:", err);
     } finally {
       setUploadingField(null);
     }
@@ -195,9 +215,9 @@ const AdminSiteSettings = () => {
               Saving...
             </>
           ) : (
-            < >
-              <Save className="w-4 h-4 text-amber-600 " />
-              <span className=" text-amber-600 ">Save Settings</span>
+            <>
+              <Save className="w-4 h-4 text-amber-600" />
+              <span className="text-amber-600">Save Settings</span>
             </>
           )}
         </button>
@@ -390,42 +410,35 @@ const AdminSiteSettings = () => {
               </button>
             </div>
             {payments.paypalEnabled && (
-              <div className="pl-13 space-y-4 ml-13">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">
-                      Client ID
-                    </label>
-                    <input
-                      type="text"
-                      value={payments.paypalClientId}
-                      onChange={(e) => {
-                        setPayments({
-                          ...payments,
-                          paypalClientId: e.target.value,
-                        });
-                        markChanged();
-                      }}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    />
+              <div className="pl-12 space-y-4 ml-12">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
+                  <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                  <div className="text-sm text-blue-800">
+                    <p className="font-medium mb-1">
+                      🔒 Secret keys are handled securely on the backend
+                    </p>
+                    <p>
+                      Only your Client ID is needed here. PayPal secret keys
+                      should never be shared or stored on the frontend.
+                    </p>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">
-                      Secret
-                    </label>
-                    <input
-                      type="password"
-                      value={payments.paypalSecret}
-                      onChange={(e) => {
-                        setPayments({
-                          ...payments,
-                          paypalSecret: e.target.value,
-                        });
-                        markChanged();
-                      }}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    />
-                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Client ID
+                  </label>
+                  <input
+                    type="text"
+                    value={payments.paypalClientId}
+                    onChange={(e) => {
+                      setPayments({
+                        ...payments,
+                        paypalClientId: e.target.value,
+                      });
+                      markChanged();
+                    }}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700 block mb-1">
@@ -488,44 +501,37 @@ const AdminSiteSettings = () => {
               </button>
             </div>
             {payments.stripeEnabled && (
-              <div className="pl-13 space-y-4 ml-13">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">
-                      Publishable Key
-                    </label>
-                    <input
-                      type="text"
-                      value={payments.stripePublicKey}
-                      onChange={(e) => {
-                        setPayments({
-                          ...payments,
-                          stripePublicKey: e.target.value,
-                        });
-                        markChanged();
-                      }}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="pk_test_..."
-                    />
+              <div className="pl-12 space-y-4 ml-12">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
+                  <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                  <div className="text-sm text-blue-800">
+                    <p className="font-medium mb-1">
+                      🔒 Secret keys are handled securely on the backend
+                    </p>
+                    <p>
+                      Only your public Publishable Key is needed here. Stripe
+                      secret keys should never be shared or stored on the
+                      frontend.
+                    </p>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">
-                      Secret Key
-                    </label>
-                    <input
-                      type="password"
-                      value={payments.stripeSecretKey}
-                      onChange={(e) => {
-                        setPayments({
-                          ...payments,
-                          stripeSecretKey: e.target.value,
-                        });
-                        markChanged();
-                      }}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="sk_test_..."
-                    />
-                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Publishable Key
+                  </label>
+                  <input
+                    type="text"
+                    value={payments.stripePublicKey}
+                    onChange={(e) => {
+                      setPayments({
+                        ...payments,
+                        stripePublicKey: e.target.value,
+                      });
+                      markChanged();
+                    }}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="pk_test_..."
+                  />
                 </div>
               </div>
             )}

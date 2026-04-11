@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { logger } from "../../utils/logger";
+import { validateEmail } from "../../utils/validation";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import logo from "../../assets/cayeats-rmbg.png";
@@ -28,7 +30,7 @@ const LoginPage = () => {
         const logins = JSON.parse(stored);
         setSavedEmails(logins);
       } catch (err) {
-        console.error("Failed to parse saved logins:", err);
+        logger.error("Failed to parse saved logins:", err);
       }
     }
   }, []);
@@ -71,7 +73,7 @@ const LoginPage = () => {
       localStorage.setItem("cayeats_saved_logins", JSON.stringify(logins));
       setSavedEmails(logins);
     } catch (err) {
-      console.error("Failed to save login:", err);
+      logger.error("Failed to save login:", err);
     }
   };
 
@@ -89,7 +91,7 @@ const LoginPage = () => {
       localStorage.setItem("cayeats_saved_logins", JSON.stringify(logins));
       setSavedEmails(logins);
     } catch (err) {
-      console.error("Failed to remove login:", err);
+      logger.error("Failed to remove login:", err);
     }
   };
 
@@ -97,6 +99,21 @@ const LoginPage = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    // Validate email
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
+
+    // Validate password
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters");
+      setLoading(false);
+      return;
+    }
+
     try {
       // ✅ pass role (not selectedType) and navigate
       const result = await login(email, password, role, navigate);
@@ -121,38 +138,42 @@ const LoginPage = () => {
     : savedEmails;
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-        <div className="w-full max-w-md">
-          <Link to="/" className="flex items-center gap-2 mb-8">
-            <img src={logo} alt="CayEats" className="h-13 w-20" />
+      <div className="flex-1 lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="w-full max-w-sm">
+          <Link to="/" className="inline-flex items-center gap-2 mb-6 sm:mb-8">
+            <img
+              src={logo}
+              alt="CayEats"
+              className="h-10 sm:h-13 w-16 sm:w-20"
+            />
           </Link>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
             Welcome back
           </h1>
-          <p className="text-gray-500 mb-8">
+          <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8">
             Sign in to your account to continue
           </p>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-xs sm:text-sm text-red-700">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {/* Role selector */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Sign in as
               </label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
+                className="w-full text-sm border border-gray-300 rounded-lg p-2 sm:p-2.5 focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
               >
                 <option value="user">User</option>
                 <option value="restaurant">Restaurant</option>
@@ -226,7 +247,7 @@ const LoginPage = () => {
               </button>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -234,11 +255,13 @@ const LoginPage = () => {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-4 h-4 rounded text-orange-500 border-gray-300 focus:ring-orange-500"
                 />
-                <span className="text-sm text-gray-600">Remember me</span>
+                <span className="text-xs sm:text-sm text-gray-600">
+                  Remember me
+                </span>
               </label>
               <Link
                 to="/forgot-password"
-                className="text-sm text-orange-500 hover:text-orange-600"
+                className="text-xs sm:text-sm text-orange-500 hover:text-orange-600 font-medium"
               >
                 Forgot password?
               </Link>
@@ -254,7 +277,7 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          <p className="mt-8 text-center text-gray-600">
+          <p className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-gray-600">
             Don't have an account?{" "}
             <Link
               to="/register"
@@ -267,17 +290,19 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side */}
-      <div className="hidden lg:block lg:w-1/2 relative">
+      <div className="hidden lg:flex lg:w-1/2 relative shrink-0">
         <img
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200"
+          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80"
           alt="Food"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-linear-to-br from-orange-600/90 to-orange-800/90" />
-        <div className="absolute inset-0 flex items-center justify-center p-12">
-          <div className="text-center text-white">
-            <h2 className="text-4xl font-bold mb-4">Island Dining Authority</h2>
-            <p className="text-xl text-orange-100 max-w-md">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 to-orange-800/90" />
+        <div className="absolute inset-0 flex items-center justify-center p-8 lg:p-12">
+          <div className="text-center text-white max-w-lg mx-auto">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 lg:mb-4">
+              Island Dining Authority
+            </h2>
+            <p className="text-sm sm:text-lg text-orange-100">
               Discover the best restaurants in the Cayman Islands and order from
               your favorite delivery providers.
             </p>

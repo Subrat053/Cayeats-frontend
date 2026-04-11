@@ -18,6 +18,7 @@ import {
   Loader,
 } from "lucide-react";
 import { getAllRestaurants } from "../../api/adminService";
+import { logger } from "../../utils/logger";
 
 const AdminCRM = () => {
   const [activeTab, setActiveTab] = useState("contacts");
@@ -56,7 +57,7 @@ const AdminCRM = () => {
 
         setContacts(formattedContacts);
       } catch (err) {
-        console.error("Failed to fetch contacts:", err);
+        logger.error("Failed to fetch contacts:", err);
         setError("Failed to load contacts. Please try again.");
         // Fallback to empty for now
         setContacts([]);

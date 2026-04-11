@@ -26,6 +26,8 @@ const ManageRestaurants = () => {
   const [filter, setFilter] = useState("all");
   const [success, setSuccess] = useState(null);
   const [subModal, setSubModal] = useState(null); // restaurant for subscription edit
+  const [rejectModal, setRejectModal] = useState(null); // restaurant for rejection with reason
+  const [rejectReason, setRejectReason] = useState("");
 
   const flash = (msg) => {
     setSuccess(msg);
@@ -49,17 +51,22 @@ const ManageRestaurants = () => {
     setRestaurants((prev) =>
       prev.map((r) => (r._id === id ? { ...r, isApproved: true } : r)),
     );
-    flash("Restaurant approved");
+    flash("Restaurant approved ✓ Email sent to owner");
   };
 
-  const handleReject = async (id) => {
-    await rejectRestaurant(id);
+  const handleRejectSubmit = async () => {
+    if (!rejectModal) return;
+    await rejectRestaurant(rejectModal._id, { reason: rejectReason });
     setRestaurants((prev) =>
       prev.map((r) =>
-        r._id === id ? { ...r, isApproved: false, isVerified: false } : r,
+        r._id === rejectModal._id
+          ? { ...r, isApproved: false, isVerified: false }
+          : r,
       ),
     );
-    flash("Restaurant rejected");
+    flash("Restaurant rejected ✓ Email sent to owner");
+    setRejectModal(null);
+    setRejectReason("");
   };
 
   const handleDelete = async (id) => {
@@ -283,7 +290,7 @@ const ManageRestaurants = () => {
                         )}
                         {r.isApproved && (
                           <button
-                            onClick={() => handleReject(r._id)}
+                            onClick={() => setRejectModal(r)}
                             className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg"
                             title="Reject"
                           >
@@ -339,6 +346,44 @@ const ManageRestaurants = () => {
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Rejection Modal */}
+      {rejectModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm">
+            <h3 className="font-bold text-gray-900 mb-1">Reject Restaurant</h3>
+            <p className="text-sm text-gray-500 mb-4">{rejectModal.fullName}</p>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Rejection Reason (optional)
+              </label>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Explain why this restaurant was rejected (will be sent to the owner)"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none h-24"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setRejectModal(null);
+                  setRejectReason("");
+                }}
+                className="flex-1 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg border border-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRejectSubmit}
+                className="flex-1 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium"
+              >
+                Reject
+              </button>
+            </div>
           </div>
         </div>
       )}

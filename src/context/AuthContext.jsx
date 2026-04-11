@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { validateApiResponse } from "../utils/validation";
 
 const AuthContext = createContext(null);
 
@@ -46,6 +47,12 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.post(endpoint, { email, password });
 
+      // Validate API response
+      if (!validateApiResponse(data, ["user"])) {
+        setError("Invalid server response: missing user data");
+        return { success: false, error: "Invalid server response" };
+      }
+
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));
       if (data.token) localStorage.setItem("token", data.token);
@@ -73,6 +80,12 @@ export function AuthProvider({ children }) {
 
     try {
       const { data } = await api.post(endpoint, userData);
+
+      // Validate API response
+      if (!validateApiResponse(data, ["user"])) {
+        setError("Invalid server response: missing user data");
+        return { success: false, error: "Invalid server response" };
+      }
 
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));

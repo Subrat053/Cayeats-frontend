@@ -1,4 +1,5 @@
 import api from "./axios";
+import { validateApiResponse } from "../utils/validation";
 
 export const fetchRestaurants = async (filters = {}) => {
   const params = new URLSearchParams();
@@ -8,11 +9,17 @@ export const fetchRestaurants = async (filters = {}) => {
   if (filters.provider) params.append("provider", filters.provider);
 
   const res = await api.get(`/browse/restaurants?${params.toString()}`);
+  if (!validateApiResponse(res.data, ["data"])) {
+    return [];
+  }
   return res.data?.data || [];
 };
 
 export const fetchRestaurantById = async (id) => {
   const res = await api.get(`/browse/restaurants/${id}`);
+  if (!validateApiResponse(res.data, ["data"])) {
+    throw new Error("Invalid restaurant data received from server");
+  }
   return res.data?.data;
 };
 
@@ -22,11 +29,17 @@ export const fetchRestaurantMenu = async (restaurantId, searchTerm = "") => {
   const res = await api.get(
     `/browse/restaurants/${restaurantId}/menu?${params.toString()}`,
   );
+  if (!validateApiResponse(res.data, ["data"])) {
+    return null;
+  }
   return res.data?.data;
 };
 
 export const fetchCuisineCategories = async () => {
   const res = await api.get("/browse/categories");
+  if (!validateApiResponse(res.data, ["data"])) {
+    return [];
+  }
   return res.data?.data || [];
 };
 
@@ -51,5 +64,8 @@ export const submitReportIssue = async (reportData) => {
 // ─── Footer Pages ─────────────────────────────────────────
 export const getFooterPage = async (slug) => {
   const res = await api.get(`/admin/public/footer-pages/${slug}`);
+  if (!validateApiResponse(res.data, ["data"])) {
+    return null;
+  }
   return res.data?.data;
 };

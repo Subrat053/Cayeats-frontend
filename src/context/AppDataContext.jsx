@@ -3,6 +3,7 @@ import {
   fetchRestaurants,
   fetchCuisineCategories,
 } from "../api/browseServices";
+import { logger } from "../utils/logger";
 
 const AppDataContext = createContext();
 
@@ -42,7 +43,7 @@ export const AppDataProvider = ({ children }) => {
         setDeliveryProviders(providers);
       } catch (err) {
         setError(err.message);
-        console.error("Failed to load app data:", err);
+        logger.error("Failed to load app data:", err);
       } finally {
         setLoading(false);
       }

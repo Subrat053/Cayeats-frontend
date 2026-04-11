@@ -1,4 +1,5 @@
 import api from "./axios";
+import { logger } from "../utils/logger";
 
 export const getAdminDashboard = async () => {
   const res = await api.get("/admin/dashboard");
@@ -15,8 +16,8 @@ export const approveRestaurant = async (id) => {
   return res.data;
 };
 
-export const rejectRestaurant = async (id) => {
-  const res = await api.put(`/admin/restaurants/${id}/reject`);
+export const rejectRestaurant = async (id, data = {}) => {
+  const res = await api.put(`/admin/restaurants/${id}/reject`, data);
   return res.data;
 };
 
@@ -97,28 +98,55 @@ export const createDeliveryProvider = async (providerData) => {
 
 //updation of admin on pricings
 export const getAdminSettings = async () => {
-  const res = await api.get("/admin/settings");
-  return res.data?.data;
+  try {
+    const res = await api.get("/admin/settings");
+    return res.data?.data || {};
+  } catch (error) {
+    logger.error("Failed to fetch admin settings:", error);
+    throw error;
+  }
 };
 
 export const updateAdminSettings = async (data) => {
-  const res = await api.put("/admin/settings", data);
-  return res.data?.data;
+  try {
+    const res = await api.put("/admin/settings", data);
+    return res.data?.data || {};
+  } catch (error) {
+    logger.error("Failed to update admin settings:", error);
+    throw error;
+  }
 };
 
 export const uploadAdminBrandingImage = async (file) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  const res = await api.post("/admin/settings/upload-branding", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return res.data?.url;
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await api.post("/admin/settings/upload-branding", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (!res.data?.url && !res.data?.success) {
+      throw new Error("Upload failed: No URL returned");
+    }
+    return res.data?.url || res.data?.data?.url;
+  } catch (error) {
+    logger.error("Failed to upload branding image:", error);
+    throw error;
+  }
 };
 
 // Footer settings
 export const getFooterSettings = async () => {
-  const res = await api.get("/admin/footer");
-  return res.data?.data;
+  try {
+    const res = await api.get("/admin/footer");
+    return res.data?.data;
+  } catch (error) {
+    // Handle 401 gracefully - not all users are admins
+    if (error.response?.status === 401) {
+      return null; // Return null to use default footer
+    }
+    // Silently handle other errors too - footer is not critical
+    return null;
+  }
 };
 
 export const updateFooterSettings = async (footerData) => {

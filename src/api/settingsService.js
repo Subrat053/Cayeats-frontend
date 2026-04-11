@@ -1,24 +1,41 @@
 import api from "./axios";
+import { logger } from "../utils/logger";
 
-// ─── Get Settings ─────────────────────────────────────────
+// ─── Get Public Settings (no auth required) ───────────────
+export const getPublicSettings = async () => {
+  try {
+    const response = await api.get("/browse/settings");
+    return response.data?.data || {};
+  } catch (error) {
+    // Silently fail and return defaults
+    return {};
+  }
+};
+
+// ─── Get Settings (admin only) ────────────────────────────
 export const getSettings = async () => {
   try {
     const response = await api.get("/admin/settings");
     return response.data?.data || {};
   } catch (error) {
-    console.error("Error fetching settings:", error);
-    throw error;
+    // Handle 401 (unauthorized) gracefully - not all users are admins
+    if (error.response?.status === 401) {
+      return {}; // Return empty settings instead of throwing/logging
+    }
+    // Only log unexpected errors (non-401)
+    logger.debug("Settings unavailable:", error.message);
+    return {}; // Return empty settings as fallback
   }
 };
 
 // ─── Get Currency ─────────────────────────────────────────
 export const getCurrency = async () => {
   try {
-    const settings = await getSettings();
-    return settings?.payments?.currency || "USD";
-  } catch (error) {
-    console.error("Error fetching currency:", error);
-    return null; // Keep current/localStorage value on failure
+    // Use public endpoint - no auth needed
+    const settings = await getPublicSettings();
+    return settings?.currency || "USD";
+  } catch {
+    return "USD"; // Return default currency on error (shouldn't happen due to getPublicSettings catch)
   }
 };
 
@@ -28,7 +45,7 @@ export const updateSettings = async (data) => {
     const response = await api.put("/admin/settings", data);
     return response.data?.data || {};
   } catch (error) {
-    console.error("Error updating settings:", error);
+    logger.error("Error updating settings:", error);
     throw error;
   }
 };
@@ -43,7 +60,7 @@ export const updateCurrency = async (currency) => {
     });
     return response.data?.data?.payments?.currency || currency;
   } catch (error) {
-    console.error("Error updating currency:", error);
+    logger.error("Error updating currency:", error);
     throw error;
   }
 };

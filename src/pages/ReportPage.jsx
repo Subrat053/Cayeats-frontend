@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { AlertCircle, CheckCircle, Loader } from "lucide-react";
 import { submitReportIssue, getFooterPage } from "../api/browseServices";
 import { useFooterPage } from "../context/FooterPageContext";
+import { logger } from "../utils/logger";
+import { validateEmail, validateStringLength } from "../utils/validation";
 import MarkdownRenderer from "../components/ui/MarkdownRenderer";
 
 const ReportPage = () => {
@@ -34,7 +36,7 @@ const ReportPage = () => {
         const data = await fetchFooterPage("report-guidelines");
         setPageData(data);
       } catch (err) {
-        console.error("Failed to load report guidelines:", err);
+        logger.error("Failed to load report guidelines:", err);
       } finally {
         setPageLoading(false);
       }
@@ -55,6 +57,43 @@ const ReportPage = () => {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
+
+    // Validate inputs
+    if (!validateStringLength(formData.name, 2, 100)) {
+      setStatus({
+        type: "error",
+        message: "Name must be between 2 and 100 characters",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setStatus({
+        type: "error",
+        message: "Please enter a valid email address",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.issueType) {
+      setStatus({
+        type: "error",
+        message: "Please select an issue type",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!validateStringLength(formData.description, 10, 5000)) {
+      setStatus({
+        type: "error",
+        message: "Issue description must be between 10 and 5000 characters",
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await submitReportIssue(formData);

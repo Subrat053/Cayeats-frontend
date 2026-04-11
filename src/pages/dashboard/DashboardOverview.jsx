@@ -4,6 +4,7 @@ import {
   uploadImage,
   updateRestaurantProfile,
 } from "../../api/restaurantService.js";
+import { logger } from "../../utils/logger";
 import { useNavigate } from "react-router-dom";
 import { useCurrency } from "../../context/CurrencyContext";
 
@@ -20,11 +21,11 @@ const DashboardOverview = () => {
       .then((response) => {
         // ✅ unwrap — backend returns { success: true, data: restaurant }
         const data = response?.data || response;
-        console.log("Dashboard data:", data);
+        logger.debug("Dashboard data:", data);
         setStats(data);
       })
       .catch((err) => {
-        console.error("Dashboard error:", err);
+        logger.error("Dashboard error:", err);
         setError(err?.message || "Failed to load dashboard");
       })
       .finally(() => setLoading(false));
@@ -203,7 +204,8 @@ const DashboardOverview = () => {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <p className="text-sm text-gray-500">Total Revenue</p>
           <p className="text-3xl font-bold text-gray-900 mt-1">
-            {currencySymbol}{stats?.totalRevenue ? stats.totalRevenue.toFixed(2) : "0.00"}
+            {currencySymbol}
+            {stats?.totalRevenue ? stats.totalRevenue.toFixed(2) : "0.00"}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -230,7 +232,8 @@ const DashboardOverview = () => {
                   Order #{order._id?.slice(-6)}
                 </span>
                 <span className="text-sm font-medium">
-                  {currencySymbol}{order.totalAmount?.toFixed(2) || "0.00"}
+                  {currencySymbol}
+                  {order.totalAmount?.toFixed(2) || "0.00"}
                 </span>
               </div>
             ))}

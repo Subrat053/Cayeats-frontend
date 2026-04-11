@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DollarSign, Save, Info, Globe, RefreshCw } from "lucide-react";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
+import { logger } from "../../utils/logger";
 import { useCurrency } from "../../context/CurrencyContext";
 import api from "../../api/axios";
 
@@ -32,7 +33,7 @@ const AdminCurrencySettings = () => {
       setCurrency(currentCurrency);
     } catch (err) {
       setError("Failed to load currency settings");
-      console.error(err);
+      logger.error(err);
     } finally {
       setLoading(false);
     }

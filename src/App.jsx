@@ -64,6 +64,7 @@ import {
   DashboardAnalytics,
   DashboardAdvertising,
   DashboardMenu,
+  DashboardMenuImages,
   DashboardCategories,
   DashboardCategoryAnalytics,
   DashboardFeaturedListings,
@@ -181,6 +182,10 @@ function App() {
                       <Route index element={<DashboardOverview />} />
                       <Route path="profile" element={<DashboardProfile />} />
                       <Route path="menu" element={<DashboardMenu />} />
+                      <Route
+                        path="menu-images"
+                        element={<DashboardMenuImages />}
+                      />
                       <Route
                         path="categories"
                         element={<DashboardCategories />}

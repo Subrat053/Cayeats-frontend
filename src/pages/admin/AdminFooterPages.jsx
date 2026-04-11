@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { logger } from "../../utils/logger";
 import Button from "../../components/ui/Button";
 import {
   getAllFooterPages,
@@ -254,7 +255,7 @@ const AdminFooterPages = () => {
         setTimeout(() => setMessage(""), 3000);
       }
     } catch (error) {
-      console.error("Initialize pages error:", error);
+      logger.error("Initialize pages error:", error);
       setMessage({
         type: "error",
         text: "Failed to initialize pages: " + error.message,
@@ -273,9 +274,9 @@ const AdminFooterPages = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl lg:text-3xl font-bold">
+    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+        <h1 className="text-lg sm:text-xl lg:text-3xl font-bold">
           Footer Page Management
         </h1>
         <Button
@@ -283,7 +284,7 @@ const AdminFooterPages = () => {
           disabled={saving}
           variant="primary"
           size="sm"
-          className="text-xs lg:text-sm"
+          className="text-xs lg:text-sm w-full sm:w-auto"
         >
           <Plus size={18} />
           Initialize Default Pages
@@ -302,11 +303,13 @@ const AdminFooterPages = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
         {/* Page List */}
-        <div className="col-span-3">
-          <div className="bg-gray-50 rounded p-4">
-            <h2 className="font-semibold text-lg mb-4">Pages</h2>
+        <div className="col-span-1 lg:col-span-3">
+          <div className="bg-gray-50 rounded p-3 sm:p-4">
+            <h2 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4">
+              Pages
+            </h2>
             <div className="space-y-2">
               {pages.map((page) => (
                 <button
@@ -366,17 +369,17 @@ const AdminFooterPages = () => {
         </div>
 
         {/* Page Editor */}
-        <div className="col-span-9">
+        <div className="col-span-1 lg:col-span-9">
           {selectedPage ? (
             <div className="space-y-6">
               {/* Basic Info */}
               <div>
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
                   Basic Information
                 </h2>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-xs sm:text-sm font-medium mb-2">
                       Title
                     </label>
                     <input
@@ -390,7 +393,7 @@ const AdminFooterPages = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-xs sm:text-sm font-medium mb-2">
                       Description
                     </label>
                     <input
@@ -409,9 +412,9 @@ const AdminFooterPages = () => {
                   {/* Content Editor for non-special pages */}
                   {selectedPage.slug !== "faq" &&
                     selectedPage.slug !== "contact" && (
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                         <div>
-                          <label className="block text-sm font-medium mb-2">
+                          <label className="block text-xs sm:text-sm font-medium mb-2">
                             Content (Markdown Supported)
                           </label>
                           <textarea
@@ -422,7 +425,7 @@ const AdminFooterPages = () => {
                                 content: e.target.value,
                               })
                             }
-                            rows={12}
+                            rows={8}
                             className="w-full px-3 py-2 border border-gray-300 rounded font-mono text-sm"
                             placeholder="Write content using markdown format:
 # Heading 1
@@ -442,11 +445,11 @@ Use these formatting options for professional looking pages."
                           />
 
                           {/* Markdown Hints */}
-                          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-                            <h4 className="font-semibold text-sm text-blue-900 mb-2">
+                          <div className="mt-2 sm:mt-4 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded">
+                            <h4 className="font-semibold text-xs sm:text-sm text-blue-900 mb-2">
                               📝 Markdown Quick Guide:
                             </h4>
-                            <ul className="text-xs text-blue-800 space-y-1">
+                            <ul className="text-xs text-blue-800 space-y-0.5">
                               <li>
                                 <strong># Title</strong> - Large heading
                               </li>
@@ -468,13 +471,13 @@ Use these formatting options for professional looking pages."
 
                         {/* Preview Section */}
                         <div>
-                          <label className="block text-sm font-medium mb-2">
+                          <label className="block text-xs sm:text-sm font-medium mb-2">
                             Preview (How it will look)
                           </label>
-                          <div className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-50 overflow-y-auto max-h-60 prose prose-sm">
+                          <div className="w-full px-2 sm:px-3 py-2 border border-gray-300 rounded bg-gray-50 overflow-y-auto max-h-40 sm:max-h-60 prose prose-sm">
                             {formData.content ? (
                               <div
-                                className="text-sm text-gray-700 space-y-2"
+                                className="text-xs sm:text-sm text-gray-700 space-y-1 sm:space-y-2"
                                 dangerouslySetInnerHTML={{
                                   __html: formData.content
                                     .split("\n")
@@ -504,7 +507,7 @@ Use these formatting options for professional looking pages."
                                 }}
                               />
                             ) : (
-                              <p className="text-gray-400 italic">
+                              <p className="text-gray-400 italic text-xs sm:text-sm">
                                 Preview will appear here
                               </p>
                             )}
@@ -530,12 +533,16 @@ Use these formatting options for professional looking pages."
               {/* FAQ Management */}
               {selectedPage.slug === "faq" && (
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">FAQ Management</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+                    FAQ Management
+                  </h2>
 
                   {/* Add New FAQ */}
-                  <div className="bg-secondary-50 p-4 rounded mb-6">
-                    <h3 className="font-medium mb-3">Add New FAQ</h3>
-                    <div className="space-y-3">
+                  <div className="bg-secondary-50 p-3 sm:p-4 rounded mb-4 sm:mb-6">
+                    <h3 className="font-medium text-sm sm:text-base mb-2 sm:mb-3">
+                      Add New FAQ
+                    </h3>
+                    <div className="space-y-2 sm:space-y-3">
                       <input
                         type="text"
                         placeholder="Question"
@@ -569,7 +576,7 @@ Use these formatting options for professional looking pages."
                   </div>
 
                   {/* FAQ List */}
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {selectedPage.faqs && selectedPage.faqs.length > 0 ? (
                       selectedPage.faqs.map((faq) => (
                         <div
@@ -577,14 +584,16 @@ Use these formatting options for professional looking pages."
                           className="border border-gray-200 rounded"
                         >
                           <div
-                            className="p-3 bg-gray-50 cursor-pointer flex justify-between items-center"
+                            className="p-2 sm:p-3 bg-gray-50 cursor-pointer flex justify-between items-start sm:items-center gap-2"
                             onClick={() =>
                               setExpandedFAQ(
                                 expandedFAQ === faq._id ? null : faq._id,
                               )
                             }
                           >
-                            <h4 className="font-medium">{faq.question}</h4>
+                            <h4 className="font-medium text-xs sm:text-sm flex-1 break-words">
+                              {faq.question}
+                            </h4>
                             <div className="flex items-center gap-2">
                               {expandedFAQ === faq._id ? (
                                 <ChevronUp size={18} />
@@ -595,10 +604,10 @@ Use these formatting options for professional looking pages."
                           </div>
 
                           {expandedFAQ === faq._id && (
-                            <div className="p-3 border-t border-gray-200">
+                            <div className="p-2 sm:p-3 border-t border-gray-200">
                               {editingFAQData &&
                               editingFAQData._id === faq._id ? (
-                                <div className="space-y-3">
+                                <div className="space-y-2 sm:space-y-3">
                                   <input
                                     type="text"
                                     value={editingFAQData.question}
@@ -646,10 +655,10 @@ Use these formatting options for professional looking pages."
                                 </div>
                               ) : (
                                 <div>
-                                  <p className="text-gray-700 mb-3">
+                                  <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 break-words">
                                     {faq.answer}
                                   </p>
-                                  <div className="flex gap-2">
+                                  <div className="flex gap-2 flex-col sm:flex-row">
                                     <Button
                                       onClick={() => setEditingFAQData(faq)}
                                       variant="primary"
@@ -687,13 +696,13 @@ Use these formatting options for professional looking pages."
               {/* Contact Info Management */}
               {selectedPage.slug === "contact" && (
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">
+                  <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
                     Contact Information
                   </h2>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">
+                      <label className="block text-xs sm:text-sm font-medium mb-2">
                         Email
                       </label>
                       <input
@@ -713,7 +722,7 @@ Use these formatting options for professional looking pages."
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">
+                      <label className="block text-xs sm:text-sm font-medium mb-2">
                         Phone
                       </label>
                       <input
@@ -733,7 +742,7 @@ Use these formatting options for professional looking pages."
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">
+                      <label className="block text-xs sm:text-sm font-medium mb-2">
                         Address
                       </label>
                       <textarea
@@ -753,7 +762,7 @@ Use these formatting options for professional looking pages."
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">
+                      <label className="block text-xs sm:text-sm font-medium mb-2">
                         Hours
                       </label>
                       <textarea

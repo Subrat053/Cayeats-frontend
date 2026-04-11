@@ -4,6 +4,7 @@ import {
   getFooterSettings,
   updateFooterSettings,
 } from "../../api/adminService";
+import { logger } from "../../utils/logger";
 
 const AdminFooterSettings = () => {
   const [footerData, setFooterData] = useState({
@@ -27,7 +28,7 @@ const AdminFooterSettings = () => {
       try {
         setLoading(true);
         const data = await getFooterSettings();
-        console.log("Raw footer data from API:", data);
+        logger.debug("Raw footer data from API:", data);
 
         if (data && typeof data === "object") {
           // Ensure all four sections exist with proper structure
@@ -39,17 +40,17 @@ const AdminFooterSettings = () => {
             support: Array.isArray(data.support) ? data.support : [],
             legal: Array.isArray(data.legal) ? data.legal : [],
           };
-          console.log("Initialized footer data:", completeFooterData);
+          logger.debug("Initialized footer data:", completeFooterData);
           setFooterData(completeFooterData);
         } else {
-          console.warn("Invalid footer data received:", data);
+          logger.warn("Invalid footer data received:", data);
           setMessage({
             type: "error",
             text: "Invalid footer data received from server",
           });
         }
       } catch (error) {
-        console.error("Error loading footer:", error);
+        logger.error("Error loading footer:", error);
         setMessage({
           type: "error",
           text: "Failed to load footer settings: " + error.message,
@@ -75,7 +76,7 @@ const AdminFooterSettings = () => {
       return;
     }
 
-    console.log(
+    logger.debug(
       "Editing link in section:",
       editingSection,
       "at index:",
@@ -131,7 +132,7 @@ const AdminFooterSettings = () => {
       });
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
-      console.error("Error saving edit:", error);
+      logger.error("Error saving edit:", error);
       setMessage({
         type: "error",
         text: "Failed to save edit: " + error.message,
@@ -142,7 +143,7 @@ const AdminFooterSettings = () => {
   };
 
   const handleDeleteLink = async (section, index) => {
-    console.log("Deleting link from section:", section, "at index:", index);
+    logger.debug("Deleting link from section:", section, "at index:", index);
 
     const updatedData = {
       discover:
@@ -173,7 +174,7 @@ const AdminFooterSettings = () => {
       });
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
-      console.error("Error deleting link:", error);
+      logger.error("Error deleting link:", error);
       setMessage({
         type: "error",
         text: "Failed to delete link: " + error.message,
@@ -189,8 +190,8 @@ const AdminFooterSettings = () => {
       return;
     }
 
-    console.log("Adding link to section:", section);
-    console.log("Current footerData before add:", footerData);
+    logger.debug("Adding link to section:", section);
+    logger.debug("Current footerData before add:", footerData);
 
     // Explicitly build the updated data to ensure all sections are preserved
     const updatedData = {
@@ -221,7 +222,7 @@ const AdminFooterSettings = () => {
           : footerData.legal || [],
     };
 
-    console.log("Updated data to send:", updatedData);
+    logger.debug("Updated data to send:", updatedData);
 
     try {
       setSaving(true);
@@ -236,7 +237,7 @@ const AdminFooterSettings = () => {
       });
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
-      console.error("Error adding link:", error);
+      logger.error("Error adding link:", error);
       setMessage({
         type: "error",
         text: "Failed to add link: " + error.message,

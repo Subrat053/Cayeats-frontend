@@ -4,6 +4,7 @@ import DashboardProfile from "./DashboardProfile";
 import DashboardAnalytics from "./DashboardAnalytics";
 import DashboardAdvertising from "./DashboardAdvertising";
 import DashboardMenu from "./DashboardMenu";
+import DashboardMenuImages from "./DashboardMenuImages";
 import DashboardCategories from "./DashboardCategories";
 import DashboardCategoryAnalytics from "./DashboardCategoryAnalytics";
 import DashboardSubscription from "./DashboardSubscription";
@@ -23,6 +24,7 @@ export {
   DashboardAnalytics,
   DashboardAdvertising,
   DashboardMenu,
+  DashboardMenuImages,
   DashboardCategories,
   DashboardCategoryAnalytics,
   DashboardSubscription,

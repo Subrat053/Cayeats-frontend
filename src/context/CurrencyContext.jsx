@@ -6,6 +6,7 @@ import {
   useCallback,
 } from "react";
 import { getCurrency, getCurrencySymbol } from "../api/settingsService";
+import { logger } from "../utils/logger";
 
 const CurrencyContext = createContext();
 
@@ -22,7 +23,7 @@ export const CurrencyProvider = ({ children }) => {
         return savedCurrency;
       }
     } catch (error) {
-      console.error("Error reading from localStorage:", error);
+      logger.error("Error reading from localStorage:", error);
     }
     return "USD";
   }, []);
@@ -32,7 +33,7 @@ export const CurrencyProvider = ({ children }) => {
     try {
       localStorage.setItem("platformCurrency", curr);
     } catch (error) {
-      console.error("Error saving to localStorage:", error);
+      logger.error("Error saving to localStorage:", error);
     }
   }, []);
 
@@ -46,7 +47,7 @@ export const CurrencyProvider = ({ children }) => {
         saveToLocalStorage(curr);
       }
     } catch (error) {
-      console.error("Error loading currency:", error);
+      logger.error("Error loading currency:", error);
       // Keep current value
     } finally {
       setLoading(false);
@@ -83,8 +84,8 @@ export const CurrencyProvider = ({ children }) => {
           saveToLocalStorage(serverCurrency);
         }
       } catch (error) {
-        console.error("Error verifying currency from server:", error);
-        // If server fails, localStorage value will be used
+        // Silently handle errors - localStorage value is already in use
+        // This is expected for non-admin users
       }
     };
 

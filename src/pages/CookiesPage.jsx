@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Loader } from "lucide-react";
 import { useFooterPage } from "../context/FooterPageContext";
+import { logger } from "../utils/logger";
 import MarkdownRenderer from "../components/ui/MarkdownRenderer";
 
 const CookiesPage = () => {
@@ -17,7 +18,7 @@ const CookiesPage = () => {
         setPageData(data);
       } catch (err) {
         setError("Failed to load cookie policy");
-        console.error(err);
+        logger.error(err);
       } finally {
         setLoading(false);
       }
@@ -50,13 +51,13 @@ const CookiesPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-950 to-gray-900 text-gray-300">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-gray-900/80 to-gray-950/80 backdrop-blur-sm border-b border-gray-800 py-16 px-4">
+      <div className="bg-gradient-to-r from-gray-900/80 to-gray-950/80 backdrop-blur-sm border-b border-gray-800 py-8 sm:py-12 md:py-16 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight">
             {pageData?.title || "Cookie Policy"}
           </h1>
-          <div className="h-1 w-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mb-6"></div>
-          <p className="text-xl text-gray-300">
+          <div className="h-1 w-16 sm:w-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full mb-4 sm:mb-6"></div>
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed">
             {pageData?.description ||
               "Learn about our use of cookies and how you can control them."}
           </p>
@@ -64,14 +65,14 @@ const CookiesPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="py-16 px-4">
+      <div className="py-8 sm:py-12 md:py-16 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
           {/* Content Box */}
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 md:p-12 shadow-2xl">
+          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-lg sm:rounded-2xl p-4 sm:p-6 md:p-8 lg:p-12 shadow-2xl">
             {pageData?.content ? (
               <MarkdownRenderer content={pageData.content} />
             ) : (
-              <p className="text-gray-400 italic text-center py-12">
+              <p className="text-gray-400 italic text-center py-8 sm:py-12 text-sm sm:text-base">
                 No content available for this page. Please contact the
                 administrator.
               </p>

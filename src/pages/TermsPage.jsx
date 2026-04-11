@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Loader } from "lucide-react";
 import { useFooterPage } from "../context/FooterPageContext";
+import { logger } from "../utils/logger";
 import MarkdownRenderer from "../components/ui/MarkdownRenderer";
 
 const TermsPage = () => {
@@ -17,7 +18,7 @@ const TermsPage = () => {
         setPageData(data);
       } catch (err) {
         setError("Failed to load terms of service");
-        console.error(err);
+        logger.error(err);
       } finally {
         setLoading(false);
       }

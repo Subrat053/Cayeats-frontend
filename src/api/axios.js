@@ -1,8 +1,19 @@
 import axios from "axios";
+import { logger } from "../utils/logger";
 
 const resolveApiBaseUrl = () => {
-  const configured =
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const configured = import.meta.env.VITE_API_URL;
+
+  // In production, VITE_API_URL must be set
+  if (!configured) {
+    if (import.meta.env.PROD) {
+      throw new Error(
+        "CRITICAL ERROR: VITE_API_URL environment variable is not set. Please configure the API endpoint in your env file.",
+      );
+    }
+    // Development fallback
+    return "http://localhost:5000/api";
+  }
 
   // Prevent mixed content: if app is served over HTTPS, never call an HTTP API.
   if (
@@ -10,6 +21,9 @@ const resolveApiBaseUrl = () => {
     window.location.protocol === "https:" &&
     configured.startsWith("http://")
   ) {
+    logger.warn(
+      "⚠️  API URL downgraded from HTTP to HTTPS for security. Ensure your backend supports HTTPS.",
+    );
     return configured.replace("http://", "https://");
   }
 

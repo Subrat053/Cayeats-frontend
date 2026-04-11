@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { submitContact, getFooterPage } from "../api/browseServices";
 import { useFooterPage } from "../context/FooterPageContext";
+import { logger } from "../utils/logger";
+import { validateEmail, validateStringLength } from "../utils/validation";
 import MarkdownRenderer from "../components/ui/MarkdownRenderer";
 import Button from "../components/ui/Button";
 
@@ -33,7 +35,7 @@ const ContactPage = () => {
         const data = await fetchFooterPage("contact");
         setPageData(data);
       } catch (err) {
-        console.error("Failed to load contact info:", err);
+        logger.error("Failed to load contact info:", err);
       } finally {
         setPageLoading(false);
       }
@@ -54,6 +56,34 @@ const ContactPage = () => {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
+
+    // Validate inputs
+    if (!validateEmail(formData.email)) {
+      setStatus({
+        type: "error",
+        message: "Please enter a valid email address",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!validateStringLength(formData.name, 2, 100)) {
+      setStatus({
+        type: "error",
+        message: "Name must be between 2 and 100 characters",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!validateStringLength(formData.message, 10, 5000)) {
+      setStatus({
+        type: "error",
+        message: "Message must be between 10 and 5000 characters",
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
       await submitContact(formData);

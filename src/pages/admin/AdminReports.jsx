@@ -6,6 +6,7 @@ import {
   deleteReport,
   getReportsByStatus,
 } from "../../api/adminService";
+import { logger } from "../../utils/logger";
 import {
   AlertCircle,
   CheckCircle2,
@@ -57,7 +58,7 @@ const AdminReports = () => {
       }
       setReports(data);
     } catch (error) {
-      console.error("Failed to fetch reports:", error);
+      logger.error("Failed to fetch reports:", error);
     } finally {
       setLoading(false);
     }

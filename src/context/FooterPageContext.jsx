@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { getFooterPage } from "../api/browseServices";
+import { logger } from "../utils/logger";
 
 const FooterPageContext = createContext();
 
@@ -33,7 +34,7 @@ export const FooterPageProvider = ({ children }) => {
           ...prev,
           [slug]: err.message || "Failed to load page",
         }));
-        console.error(`Failed to load footer page: ${slug}`, err);
+        logger.error(`Failed to load footer page: ${slug}`, err);
         return null;
       } finally {
         setLoading((prev) => ({ ...prev, [slug]: false }));

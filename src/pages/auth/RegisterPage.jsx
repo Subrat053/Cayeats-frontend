@@ -11,6 +11,8 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { logger } from "../../utils/logger";
+import { validateEmail, validateStringLength } from "../../utils/validation";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 
@@ -46,7 +48,7 @@ const RegisterPage = () => {
         const logins = JSON.parse(stored);
         setSavedEmails(logins);
       } catch (err) {
-        console.error("Failed to parse saved logins:", err);
+        logger.error("Failed to parse saved logins:", err);
       }
     }
   }, []);
@@ -103,7 +105,7 @@ const RegisterPage = () => {
       localStorage.setItem("cayeats_saved_logins", JSON.stringify(logins));
       setSavedEmails(logins);
     } catch (err) {
-      console.error("Failed to save login:", err);
+      logger.error("Failed to save login:", err);
     }
   };
 
@@ -121,7 +123,7 @@ const RegisterPage = () => {
       localStorage.setItem("cayeats_saved_logins", JSON.stringify(logins));
       setSavedEmails(logins);
     } catch (err) {
-      console.error("Failed to remove login:", err);
+      logger.error("Failed to remove login:", err);
     }
   };
 
@@ -136,6 +138,19 @@ const RegisterPage = () => {
     e.preventDefault();
     setError("");
 
+    // Validate name
+    if (!validateStringLength(formData.name, 2, 100)) {
+      setError("Name must be between 2 and 100 characters");
+      return;
+    }
+
+    // Validate email
+    if (!validateEmail(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Validate passwords
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;

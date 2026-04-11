@@ -1,4 +1,5 @@
 import api from "./axios";
+import { logger } from "../utils/logger";
 
 // Get all categories for restaurant
 export const getCategories = async () => {
@@ -6,7 +7,7 @@ export const getCategories = async () => {
     const response = await api.get("/restaurant/categories");
     return response.data.data || [];
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    logger.error("Error fetching categories:", error);
     throw error;
   }
 };
@@ -17,7 +18,7 @@ export const createCategory = async (categoryData) => {
     const response = await api.post("/restaurant/categories", categoryData);
     return response.data.data;
   } catch (error) {
-    console.error("Error creating category:", error);
+    logger.error("Error creating category:", error);
     throw error;
   }
 };
@@ -31,7 +32,7 @@ export const updateCategory = async (categoryId, categoryData) => {
     );
     return response.data.data;
   } catch (error) {
-    console.error("Error updating category:", error);
+    logger.error("Error updating category:", error);
     throw error;
   }
 };
@@ -42,7 +43,7 @@ export const deleteCategory = async (categoryId) => {
     const response = await api.delete(`/restaurant/categories/${categoryId}`);
     return response.data;
   } catch (error) {
-    console.error("Error deleting category:", error);
+    logger.error("Error deleting category:", error);
     throw error;
   }
 };
@@ -55,7 +56,7 @@ export const reorderCategories = async (categories) => {
     });
     return response.data.data;
   } catch (error) {
-    console.error("Error reordering categories:", error);
+    logger.error("Error reordering categories:", error);
     throw error;
   }
 };
@@ -66,7 +67,7 @@ export const getCategoryAnalytics = async () => {
     const response = await api.get("/restaurant/categories/analytics/all");
     return response.data.data || [];
   } catch (error) {
-    console.error("Error fetching category analytics:", error);
+    logger.error("Error fetching category analytics:", error);
     throw error;
   }
 };
@@ -78,6 +79,6 @@ export const trackCategoryView = async (categoryId) => {
     return response.data.data;
   } catch (error) {
     // Fail silently for tracking - don't break UX
-    console.warn("Failed to track category view:", error);
+    logger.warn("Failed to track category view:", error);
   }
 };

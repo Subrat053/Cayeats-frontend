@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/axios";
+import { logger } from "../utils/logger";
 
 const DashboardContext = createContext();
 
@@ -13,7 +14,7 @@ export const DashboardProvider = ({ children }) => {
         const { data } = await api.get("/dashboard/me");
         setDashboardData(data.data);
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       } finally {
         setLoading(false);
       }

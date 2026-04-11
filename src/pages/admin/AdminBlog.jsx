@@ -18,6 +18,7 @@ import {
   Info,
   Loader,
 } from "lucide-react";
+import { logger } from "../../utils/logger";
 
 const AdminBlog = () => {
   const [activeTab, setActiveTab] = useState("posts");
@@ -109,7 +110,7 @@ const AdminBlog = () => {
           localStorage.setItem("blogPosts", JSON.stringify(mockPosts));
         }
       } catch (err) {
-        console.error("Failed to load posts:", err);
+        logger.error("Failed to load posts:", err);
         setError("Failed to load blog posts");
       } finally {
         setLoading(false);

@@ -24,6 +24,7 @@ const NAV_ITEMS = [
     icon: ShoppingBag,
     children: [
       { label: "Menu Items", path: "/dashboard/menu" },
+      { label: "Menu Images", path: "/dashboard/menu-images" },
       { label: "Categories", path: "/dashboard/categories" },
       { label: "Category Analytics", path: "/dashboard/categories/analytics" },
     ],

@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
+import { logger } from "../utils/logger";
 
 const FavoritesContext = createContext(null);
 
@@ -10,21 +11,34 @@ export const FavoritesProvider = ({ children }) => {
 
   // Load favorites from localStorage on mount or when user changes
   useEffect(() => {
-    if (isAuthenticated && user) {
-      const storedFavorites = localStorage.getItem(`favorites_${user.id}`);
-      if (storedFavorites) {
-        setFavorites(JSON.parse(storedFavorites));
+    try {
+      if (isAuthenticated && user) {
+        const storedFavorites = localStorage.getItem(`favorites_${user.id}`);
+        if (storedFavorites) {
+          const parsed = JSON.parse(storedFavorites);
+          // Validate that it's an array
+          setFavorites(Array.isArray(parsed) ? parsed : []);
+        } else {
+          setFavorites([]);
+        }
       } else {
-        setFavorites([]);
+        // For non-authenticated users, use a generic key
+        const storedFavorites = localStorage.getItem("favorites_guest");
+        if (storedFavorites) {
+          const parsed = JSON.parse(storedFavorites);
+          // Validate that it's an array
+          setFavorites(Array.isArray(parsed) ? parsed : []);
+        } else {
+          setFavorites([]);
+        }
       }
-    } else {
-      // For non-authenticated users, use a generic key
-      const storedFavorites = localStorage.getItem('favorites_guest');
-      if (storedFavorites) {
-        setFavorites(JSON.parse(storedFavorites));
-      } else {
-        setFavorites([]);
-      }
+    } catch (err) {
+      logger.error("Failed to load favorites from localStorage:", err);
+      // Clear corrupted data and start fresh
+      const key =
+        isAuthenticated && user ? `favorites_${user.id}` : "favorites_guest";
+      localStorage.removeItem(key);
+      setFavorites([]);
     }
     setLoading(false);
   }, [user, isAuthenticated]);
@@ -32,20 +46,43 @@ export const FavoritesProvider = ({ children }) => {
   // Save favorites to localStorage whenever they change
   useEffect(() => {
     if (!loading) {
-      const key = isAuthenticated && user ? `favorites_${user.id}` : 'favorites_guest';
-      localStorage.setItem(key, JSON.stringify(favorites));
+      try {
+        const key =
+          isAuthenticated && user ? `favorites_${user.id}` : "favorites_guest";
+        localStorage.setItem(key, JSON.stringify(favorites));
+      } catch (err) {
+        if (err.name === "QuotaExceededError") {
+          logger.error("localStorage quota exceeded. Clearing old data...");
+          // Try to clear old data and retry
+          localStorage.clear();
+          try {
+            const key =
+              isAuthenticated && user
+                ? `favorites_${user.id}`
+                : "favorites_guest";
+            localStorage.setItem(key, JSON.stringify(favorites));
+          } catch (retryErr) {
+            logger.error(
+              "Failed to save favorites even after clearing storage:",
+              retryErr,
+            );
+          }
+        } else {
+          logger.error("Failed to save favorites to localStorage:", err);
+        }
+      }
     }
   }, [favorites, user, isAuthenticated, loading]);
 
   const addFavorite = (restaurantId) => {
-    setFavorites(prev => {
+    setFavorites((prev) => {
       if (prev.includes(restaurantId)) return prev;
       return [...prev, restaurantId];
     });
   };
 
   const removeFavorite = (restaurantId) => {
-    setFavorites(prev => prev.filter(id => id !== restaurantId));
+    setFavorites((prev) => prev.filter((id) => id !== restaurantId));
   };
 
   const toggleFavorite = (restaurantId) => {
@@ -85,7 +122,7 @@ export const FavoritesProvider = ({ children }) => {
 export const useFavorites = () => {
   const context = useContext(FavoritesContext);
   if (!context) {
-    throw new Error('useFavorites must be used within a FavoritesProvider');
+    throw new Error("useFavorites must be used within a FavoritesProvider");
   }
   return context;
 };
