@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Upload, X, Image as ImageIcon, Loader } from "lucide-react";
 import {
-  uploadImage,
+  uploadImageWithMeta,
   getMenuImages,
   addMenuImage,
   deleteMenuImage,
@@ -48,8 +48,9 @@ const DashboardMenuImages = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith("image/")) {
-      flashMessage("Please select an image file", true);
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      flashMessage("Only JPG, PNG, or WEBP images are allowed", true);
       return;
     }
 
@@ -64,19 +65,15 @@ const DashboardMenuImages = () => {
 
     try {
       // Upload image to Cloudinary via backend
-      const uploadResponse = await uploadImage(file);
+      const uploadResponse = await uploadImageWithMeta(file);
 
-      if (!uploadResponse) {
+      if (!uploadResponse?.url) {
         throw new Error("Failed to get image URL");
       }
 
       // uploadResponse now contains { url, publicId }
-      const imageUrl =
-        typeof uploadResponse === "string"
-          ? uploadResponse
-          : uploadResponse.url || uploadResponse;
-      const publicId =
-        typeof uploadResponse === "object" ? uploadResponse.publicId : null;
+      const imageUrl = uploadResponse.url;
+      const publicId = uploadResponse.publicId || null;
 
       // Save menu image reference to database with publicId
       await addMenuImage(imageUrl, publicId);
@@ -212,7 +209,7 @@ const DashboardMenuImages = () => {
                     Click to upload or drag and drop
                   </p>
                   <p className="text-sm text-gray-500 mt-1">
-                    PNG, JPG, GIF up to 5MB
+                    PNG, JPG, WEBP up to 5MB
                   </p>
                 </div>
               </>

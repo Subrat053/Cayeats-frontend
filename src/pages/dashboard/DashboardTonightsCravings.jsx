@@ -151,7 +151,7 @@ const DashboardTonightsCravings = () => {
 
       {/* Active craving */}
       {active && (
-        <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6">
+        <div className="bg-linear-to-br from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="w-5 h-5 text-orange-600" />
             <h2 className="font-semibold text-orange-900">
@@ -372,7 +372,8 @@ const DashboardTonightsCravings = () => {
                   >
                     <p className="font-medium text-gray-900">{plan.name}</p>
                     <p className="text-xl font-bold text-orange-500">
-                      {currencySymbol}{plan.price}
+                      {currencySymbol}
+                      {plan.price}
                     </p>
                     {plan.savings && (
                       <p className="text-xs text-green-600 mt-1">
@@ -394,7 +395,8 @@ const DashboardTonightsCravings = () => {
                 <div className="flex justify-between border-t pt-2">
                   <span className="font-semibold">Total</span>
                   <span className="text-xl font-bold text-orange-500">
-                    {currencySymbol}{selectedPlan.price} {currency}
+                    {currencySymbol}
+                    {selectedPlan.price} {currency}
                   </span>
                 </div>
               </div>

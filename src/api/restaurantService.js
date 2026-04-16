@@ -151,6 +151,23 @@ export const uploadImage = async (file) => {
   );
 };
 
+export const uploadImageWithMeta = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  const res = await api.post("/restaurant/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  const url =
+    res.data?.url ||
+    res.data?.data?.profileImage ||
+    res.data?.data?.image ||
+    null;
+  const publicId = res.data?.publicId || null;
+
+  return { url, publicId };
+};
+
 // ─── Products ─────────────────────────────────────────────
 export const getProducts = async () => {
   const res = await api.get("/restaurant/products");
