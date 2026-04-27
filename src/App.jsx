@@ -37,6 +37,8 @@ import {
 } from "./pages";
 
 import { LoginPage, RegisterPage, ForgotPasswordPage } from "./pages/auth";
+import RestaurantLoginPage from "./pages/auth/RestaurantLoginPage";
+import AdminLoginPage from "./pages/auth/AdminLoginPage";
 
 import {
   AdminDashboard,
@@ -89,6 +91,11 @@ function App() {
                   <Routes>
                     {/* ── Auth Routes ── */}
                     <Route path="/login" element={<LoginPage />} />
+                    <Route
+                      path="/restaurant/login"
+                      element={<RestaurantLoginPage />}
+                    />
+                    <Route path="/admin/login" element={<AdminLoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route
                       path="/forgot-password"

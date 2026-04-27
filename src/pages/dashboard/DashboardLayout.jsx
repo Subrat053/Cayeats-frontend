@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, useNavigate, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -13,8 +13,10 @@ import {
   ChevronUp,
   Bell,
   LogOut,
+  ExternalLink,
 } from "lucide-react";
 import { getRestaurantProfile } from "../../api/restaurantService";
+import { useAuth } from "../../context/AuthContext";
 
 const NAV_ITEMS = [
   { label: "Overview", path: "/dashboard", icon: LayoutDashboard, exact: true },
@@ -53,20 +55,12 @@ const DashboardLayout = () => {
     isApproved: true,
   });
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    // Save currency before clearing localStorage (it's a global platform setting, not user-specific)
-    const savedCurrency = localStorage.getItem("platformCurrency");
-
-    // Clear all localStorage items
-    localStorage.clear();
-
-    // Restore currency after clearing
-    if (savedCurrency) {
-      localStorage.setItem("platformCurrency", savedCurrency);
-    }
-
-    navigate("/login");
+    // ✅ Use AuthContext logout to properly update React state and clear auth
+    // Redirect to home page so user can choose to log in as any role
+    logout(navigate, "/");
   };
 
   useEffect(() => {
@@ -221,10 +215,22 @@ const DashboardLayout = () => {
             </svg>
           </button>
 
-          <button className="relative p-2 text-gray-500 hover:text-orange-500">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+          {/* Right side - Visit Site & Bell */}
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+              title="Go to homepage"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span className="hidden sm:inline">Visit Site</span>
+            </Link>
+
+            <button className="relative p-2 text-gray-500 hover:text-orange-500">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+          </div>
         </header>
 
         {/* Page content */}

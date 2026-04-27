@@ -36,9 +36,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate("/");
     setIsUserMenuOpen(false);
+    logout(navigate, "/"); // pass navigate in — AuthContext calls it after clearing user
   };
 
   const getDashboardLink = () => {

@@ -16,12 +16,33 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser && storedUser !== "undefined") {
+    const storedToken = localStorage.getItem("token");
+
+    // ✅ Only restore session if BOTH user and token exist
+    if (
+      storedUser &&
+      storedUser !== "undefined" &&
+      storedToken &&
+      storedToken.length > 0
+    ) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        // ✅ Ensure the user object has role for auth checks
+        if (parsedUser && parsedUser.role) {
+          setUser(parsedUser);
+        } else {
+          // Invalid user object, clear both
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+        }
       } catch (e) {
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
       }
+    } else {
+      // ✅ Clean up any partial state - both must be present
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     }
     setLoading(false);
   }, []);
@@ -47,15 +68,16 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.post(endpoint, { email, password });
 
-      // Validate API response
-      if (!validateApiResponse(data, ["user"])) {
-        setError("Invalid server response: missing user data");
+      // ✅ Validate API response - BOTH user AND token must be present
+      if (!validateApiResponse(data, ["user", "token"])) {
+        setError("Invalid server response: missing user or token data");
         return { success: false, error: "Invalid server response" };
       }
 
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));
-      if (data.token) localStorage.setItem("token", data.token);
+      // ✅ ALWAYS set token - it's required for API requests
+      localStorage.setItem("token", data.token);
 
       // ✅ redirect based on actual role from backend
       if (navigate) redirectByRole(data.user.role, navigate);
@@ -81,15 +103,16 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.post(endpoint, userData);
 
-      // Validate API response
-      if (!validateApiResponse(data, ["user"])) {
-        setError("Invalid server response: missing user data");
+      // ✅ Validate API response - BOTH user AND token must be present
+      if (!validateApiResponse(data, ["user", "token"])) {
+        setError("Invalid server response: missing user or token data");
         return { success: false, error: "Invalid server response" };
       }
 
       setUser(data.user);
       localStorage.setItem("user", JSON.stringify(data.user));
-      if (data.token) localStorage.setItem("token", data.token);
+      // ✅ ALWAYS set token - it's required for API requests
+      localStorage.setItem("token", data.token);
 
       if (navigate) redirectByRole(data.user.role, navigate);
 
@@ -102,20 +125,13 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = (navigate) => {
-    // Save currency before clearing localStorage (it's a global platform setting, not user-specific)
+  const logout = (navigate, redirectTo = "/") => {
     const savedCurrency = localStorage.getItem("platformCurrency");
-
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-
-    // Restore currency after clearing
-    if (savedCurrency) {
-      localStorage.setItem("platformCurrency", savedCurrency);
-    }
-
-    if (navigate) navigate("/login");
+    if (savedCurrency) localStorage.setItem("platformCurrency", savedCurrency);
+    if (navigate) navigate(redirectTo);
   };
 
   return (
