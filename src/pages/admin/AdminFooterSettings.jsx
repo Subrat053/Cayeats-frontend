@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
-import { Save, Plus, Trash2, Edit2, X, Loader } from "lucide-react";
+import {
+  Save,
+  Plus,
+  Trash2,
+  Edit2,
+  X,
+  Loader,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 import {
   getFooterSettings,
   updateFooterSettings,
+  getContactSettings,
+  updateContactSettings,
 } from "../../api/adminService";
 import { logger } from "../../utils/logger";
 
@@ -14,6 +26,12 @@ const AdminFooterSettings = () => {
     legal: [],
   });
 
+  const [contactData, setContactData] = useState({
+    email: "",
+    phone: "",
+    address: "",
+  });
+
   const [editingSection, setEditingSection] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
   const [editLabel, setEditLabel] = useState("");
@@ -21,10 +39,16 @@ const AdminFooterSettings = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editingContact, setEditingContact] = useState(false);
+  const [tempContactData, setTempContactData] = useState({
+    email: "",
+    phone: "",
+    address: "",
+  });
 
-  // Load footer data from API
+  // Load footer and contact data from API
   useEffect(() => {
-    const loadFooterData = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
         const data = await getFooterSettings();
@@ -42,6 +66,20 @@ const AdminFooterSettings = () => {
           };
           logger.debug("Initialized footer data:", completeFooterData);
           setFooterData(completeFooterData);
+
+          // Load contact info
+          if (data.contact) {
+            setContactData({
+              email: data.contact.email || "",
+              phone: data.contact.phone || "",
+              address: data.contact.address || "",
+            });
+            setTempContactData({
+              email: data.contact.email || "",
+              phone: data.contact.phone || "",
+              address: data.contact.address || "",
+            });
+          }
         } else {
           logger.warn("Invalid footer data received:", data);
           setMessage({
@@ -50,17 +88,17 @@ const AdminFooterSettings = () => {
           });
         }
       } catch (error) {
-        logger.error("Error loading footer:", error);
+        logger.error("Error loading settings:", error);
         setMessage({
           type: "error",
-          text: "Failed to load footer settings: " + error.message,
+          text: "Failed to load settings: " + error.message,
         });
       } finally {
         setLoading(false);
       }
     };
 
-    loadFooterData();
+    loadData();
   }, []);
 
   const handleEditLink = (section, index, link) => {
@@ -247,6 +285,44 @@ const AdminFooterSettings = () => {
     }
   };
 
+  // Contact Info Handlers
+  const handleSaveContact = async () => {
+    if (!tempContactData.email.trim() || !tempContactData.phone.trim()) {
+      setMessage({ type: "error", text: "Email and phone are required" });
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await updateContactSettings(tempContactData);
+      setContactData(tempContactData);
+      setEditingContact(false);
+      setMessage({
+        type: "success",
+        text: "Contact information updated successfully!",
+      });
+      setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+      logger.error("Error saving contact:", error);
+      setMessage({
+        type: "error",
+        text: "Failed to save contact: " + error.message,
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelContact = () => {
+    setTempContactData(contactData);
+    setEditingContact(false);
+  };
+
+  const handleEditContactClick = () => {
+    setTempContactData(contactData);
+    setEditingContact(true);
+  };
+
   const sectionLabels = {
     discover: "Discover",
     forBusiness: "For Business",
@@ -259,7 +335,7 @@ const AdminFooterSettings = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Footer Settings</h1>
         <p className="text-gray-500 mt-2">
-          Manage footer navigation links and sections
+          Manage footer navigation links, sections, and contact information
         </p>
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
@@ -291,7 +367,149 @@ const AdminFooterSettings = () => {
             </div>
           )}
 
-          {/* Debug: Show loaded sections status */}
+          {/* Contact Information Section */}
+          <div className="mb-8 bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Mail className="w-5 h-5" />
+                Contact Information
+              </h2>
+            </div>
+
+            <div className="p-6">
+              {!editingContact ? (
+                <div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+                    {/* Email Display */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                        <Mail className="w-4 h-4 text-orange-500" />
+                        Email
+                      </div>
+                      <p className="text-gray-900 font-mono text-sm break-all">
+                        {contactData.email || "Not set"}
+                      </p>
+                    </div>
+
+                    {/* Phone Display */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                        <Phone className="w-4 h-4 text-orange-500" />
+                        Phone
+                      </div>
+                      <p className="text-gray-900 font-mono text-sm">
+                        {contactData.phone || "Not set"}
+                      </p>
+                    </div>
+
+                    {/* Address Display */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                        <MapPin className="w-4 h-4 text-orange-500" />
+                        Address
+                      </div>
+                      <p className="text-gray-900 text-sm">
+                        {contactData.address || "Not set"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleEditContactClick}
+                    className="px-6 py-2 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition-colors flex items-center gap-2"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    Edit Contact Information
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={tempContactData.email}
+                      onChange={(e) =>
+                        setTempContactData({
+                          ...tempContactData,
+                          email: e.target.value,
+                        })
+                      }
+                      placeholder="info@cayeats.com"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={tempContactData.phone}
+                      onChange={(e) =>
+                        setTempContactData({
+                          ...tempContactData,
+                          phone: e.target.value,
+                        })
+                      }
+                      placeholder="+1 (345) 999-9999"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      value={tempContactData.address}
+                      onChange={(e) =>
+                        setTempContactData({
+                          ...tempContactData,
+                          address: e.target.value,
+                        })
+                      }
+                      placeholder="George Town, Grand Cayman, Cayman Islands"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveContact}
+                      disabled={saving}
+                      className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 disabled:bg-gray-400 transition-colors flex items-center justify-center gap-2"
+                    >
+                      {saving ? (
+                        <>
+                          <Loader className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          Save
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={handleCancelContact}
+                      disabled={saving}
+                      className="flex-1 px-4 py-2 bg-gray-400 text-white rounded-lg font-bold hover:bg-gray-500 disabled:bg-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer Links Section */}
           <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <p className="text-sm font-semibold text-gray-700 mb-2">
               📊 Loaded Sections:

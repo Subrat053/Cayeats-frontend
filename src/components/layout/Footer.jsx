@@ -40,7 +40,19 @@ const DEFAULT_FOOTER_LINKS = {
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [footerLinks, setFooterLinks] = useState(DEFAULT_FOOTER_LINKS);
+  const [contactInfo, setContactInfo] = useState({
+    email: "info@cayeats.com",
+    phone: "+1 (345) 999-9999",
+    address: "George Town, Grand Cayman, Cayman Islands",
+  });
   const [loading, setLoading] = useState(true);
+
+  // Format phone number for tel: link
+  const formatPhoneForTel = (phone) => {
+    // Remove all non-digit characters and ensure it starts with 1
+    const digits = phone.replace(/\D/g, "");
+    return digits.length === 10 ? `+1${digits}` : `+${digits}`;
+  };
 
   useEffect(() => {
     const loadFooterSettings = async () => {
@@ -71,6 +83,17 @@ const Footer = () => {
                 ? settings.legal
                 : DEFAULT_FOOTER_LINKS.legal,
           });
+
+          // Load contact info if available
+          if (settings.contact) {
+            setContactInfo({
+              email: settings.contact.email || "info@cayeats.com",
+              phone: settings.contact.phone || "+1 (345) 999-9999",
+              address:
+                settings.contact.address ||
+                "George Town, Grand Cayman, Cayman Islands",
+            });
+          }
         } else {
           setFooterLinks(DEFAULT_FOOTER_LINKS);
         }
@@ -240,26 +263,24 @@ const Footer = () => {
             <ul className="space-y-2 sm:space-y-4">
               <li className="flex items-start gap-3 text-xs sm:text-sm text-gray-400 hover:text-orange-400 transition-colors duration-200">
                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-orange-400 mt-0.5" />
-                <span className="leading-relaxed">
-                  George Town, Grand Cayman, Cayman Islands
-                </span>
+                <span className="leading-relaxed">{contactInfo.address}</span>
               </li>
               <li className="flex items-center gap-3 text-xs sm:text-sm group cursor-pointer">
                 <Mail className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-orange-400" />
                 <a
-                  href="mailto:info@cayeats.com"
+                  href={`mailto:${contactInfo.email}`}
                   className="text-gray-400 group-hover:text-orange-400 transition-colors duration-200"
                 >
-                  info@cayeats.com
+                  {contactInfo.email}
                 </a>
               </li>
               <li className="flex items-center gap-3 text-xs sm:text-sm group cursor-pointer">
                 <Phone className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-orange-400" />
                 <a
-                  href="tel:+13459999999"
+                  href={`tel:${formatPhoneForTel(contactInfo.phone)}`}
                   className="text-gray-400 group-hover:text-orange-400 transition-colors duration-200"
                 >
-                  +1 (345) 999-9999
+                  {contactInfo.phone}
                 </a>
               </li>
             </ul>

@@ -154,6 +154,24 @@ export const updateFooterSettings = async (footerData) => {
   return res.data?.data;
 };
 
+// Contact Settings
+export const getContactSettings = async () => {
+  try {
+    const res = await api.get("/admin/footer");
+    return res.data?.data?.contact;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      return null;
+    }
+    return null;
+  }
+};
+
+export const updateContactSettings = async (contactData) => {
+  const res = await api.put("/admin/footer", { contact: contactData });
+  return res.data?.data?.contact;
+};
+
 // Report Management
 export const getAllReports = async () => {
   const res = await api.get("/admin/reports");
